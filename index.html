@@ -650,7 +650,7 @@ async function openChart(symRaw, chain, pool) {
 
 /* ===================================================================== AI voice brief (Web Speech API, no keys) */
 const VOICE = {
-  uz:{ go:'Tinglash', stop:'To‘xtatish', lang:'uz-UZ', pref:['uz','tr','ru','en'], minus:'minus', plus:'plyus', set:'Ovoz sozlamalari', key:'ElevenLabs API kaliti', vid:'Voice ID', save:'Saqlash', clear:'Tozalash', up:'MP3 yuklash', del:'O‘chirish', L:'Chap panel', R:'O‘ng panel', none:'fayl yo‘q', saved:'Saqlandi', hint:'Ustuvorlik: 1) yuklangan MP3 → 2) ElevenLabs → 3) brauzer ovozi.', warn:'Kalit shu brauzerning localStorage xotirasida ochiq matn sifatida saqlanadi.', close:'Yopish', fb:'ElevenLabs ishlamadi — brauzer ovoziga o‘tildi' },
+  uz:{ go:'Tinglash', stop:'To‘xtatish', lang:'uz-UZ', pref:['uz'], minus:'minus', plus:'plyus', set:'Ovoz sozlamalari', key:'ElevenLabs API kaliti', vid:'Voice ID', save:'Saqlash', clear:'Tozalash', up:'MP3 yuklash', del:'O‘chirish', L:'Chap panel', R:'O‘ng panel', none:'fayl yo‘q', saved:'Saqlandi', hint:'Ustuvorlik: 1) yuklangan MP3 → 2) ElevenLabs → 3) brauzer ovozi.', warn:'Kalit shu brauzerning localStorage xotirasida ochiq matn sifatida saqlanadi.', close:'Yopish', fb:'ElevenLabs ishlamadi — brauzer ovoziga o‘tildi' },
   ru:{ go:'Слушать', stop:'Стоп', lang:'ru-RU', pref:['ru','en'], minus:'минус', plus:'плюс', set:'Настройки голоса', key:'API-ключ ElevenLabs', vid:'Voice ID', save:'Сохранить', clear:'Очистить', up:'Загрузить MP3', del:'Удалить', L:'Левая панель', R:'Правая панель', none:'нет файла', saved:'Сохранено', hint:'Приоритет: 1) загруженный MP3 → 2) ElevenLabs → 3) голос браузера.', warn:'Ключ хранится в localStorage этого браузера открытым текстом.', close:'Закрыть', fb:'ElevenLabs недоступен — используется голос браузера' },
   en:{ go:'Listen', stop:'Stop', lang:'en-US', pref:['en'], minus:'minus', plus:'plus', set:'Voice settings', key:'ElevenLabs API key', vid:'Voice ID', save:'Save', clear:'Clear', up:'Upload MP3', del:'Remove', L:'Left panel', R:'Right panel', none:'no file', saved:'Saved', hint:'Priority: 1) uploaded MP3 → 2) ElevenLabs → 3) browser voice.', warn:'The key is stored in this browser’s localStorage as plain text.', close:'Close', fb:'ElevenLabs failed — switched to the browser voice' } };
 const SPEAKER_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" fill="#fff"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
@@ -676,10 +676,42 @@ function voiceBtn(side) {
   return el('span', { class:'vgrp' }, gear, b);
 }
 const aiHead = (title, side) => el('div', { class:'aih' }, el('span', { class:'t', text:'🤖 ' + title }), voiceBtn(side));
+const MALE_RE = /sardor|pavel|dmitry|dmitri|yuri|maxim|david|mark|guy|james|george|daniel|alex|male|man\b|ryan|eric|brian|christopher|roger|steffan|aria(?!n)/i;
+const FEMALE_RE = /female|woman|svetlana|irina|katya|anna|zira|jenny|aria|sara|samantha|victoria|karen|tessa|susan|hazel|libby|natasha|olga|milena/i;
 function pickVoice(V) {
   const vs = (canSpeak() && speechSynthesis.getVoices && speechSynthesis.getVoices()) || [];
-  for (const p of V.pref) { const v = vs.find((x) => lc(x.lang).replace('_', '-').startsWith(p)); if (v) return v; }
+  for (const p of V.pref) {
+    const m = vs.filter((x) => lc(x.lang).replace('_', '-').startsWith(p));
+    if (!m.length) continue;
+    return m.find((x) => /sardor/i.test(x.name)) || m.find((x) => MALE_RE.test(x.name) && !FEMALE_RE.test(x.name)) || m.find((x) => !FEMALE_RE.test(x.name)) || m[0];
+  }
   return null;
+}
+/* Uzbek: 1) native uz voice (Microsoft Sardor) via speechSynthesis  2) Google Translate TTS (tl=uz), sentence-chunked, played sequentially.
+   Never falls back to a Russian/Turkish voice, so Uzbek text is never read with a foreign accent. */
+function chunkText(t, max) {
+  const parts = t.match(/[^.!?;:]+[.!?;:]?/g) || [t], out = []; let cur = '';
+  const push = (x) => { if (x) out.push(x); };
+  for (let p of parts) {
+    p = p.trim(); if (!p) continue;
+    while (p.length > max) { let k = p.lastIndexOf(' ', max); if (k < 40) k = max; if (cur) { push(cur); cur = ''; } push(p.slice(0, k).trim()); p = p.slice(k).trim(); }
+    if ((cur + ' ' + p).trim().length <= max) cur = (cur + ' ' + p).trim(); else { push(cur); cur = p; }
+  }
+  push(cur); return out;
+}
+function googleTTSSpeak(side, text, my, onFail) {
+  const chunks = chunkText(text, 170); let i = 0, okAny = false;
+  const next = () => {
+    if (my !== voiceTok) return;
+    if (i >= chunks.length) { finish(side, my); return; }
+    const a = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=uz&q=' + encodeURIComponent(chunks[i++]));
+    a.playbackRate = 0.96; try { a.preservesPitch = false; a.mozPreservesPitch = false; a.webkitPreservesPitch = false; } catch (e) {}   // slightly lower, deeper tone
+    curAudio = a;
+    a.onended = () => { okAny = true; next(); };
+    a.onerror = () => { if (my !== voiceTok) return; if (okAny) next(); else onFail(); };
+    const p = a.play(); if (p && p.catch) p.catch(() => { if (my === voiceTok && !okAny) onFail(); });
+  };
+  next();
 }
 function stopVoice() {
   voiceTok++; voiceSide = '';
@@ -694,12 +726,18 @@ function toast(msg) {
 }
 function finish(side, my) { if (my === voiceTok && voiceSide === side) { voiceSide = ''; renderAll(); } }
 function synthSpeak(side, text, my) {
+  const V = VOICE[state.lang], uz = state.lang === 'uz';
+  const v = canSpeak() ? pickVoice(V) : null;
+  if (uz && !v) {                                      // no native Uzbek voice (typical Chrome) -> Google Uzbek TTS
+    googleTTSSpeak(side, text, my, () => { if (my === voiceTok) { toast('Uzbek ovozi yuklanmadi (internet/Google TTS). Qo‘lda MP3 yuklang yoki ElevenLabs kalitini kiriting.'); finish(side, my); } });
+    return;
+  }
   if (!canSpeak()) { finish(side, my); return; }
-  const V = VOICE[state.lang];
   setTimeout(() => {                                   // Chrome drops speak() issued right after cancel()
     if (my !== voiceTok) return;
-    const u = new SpeechSynthesisUtterance(text), v = pickVoice(V);
-    u.lang = v ? v.lang : V.lang; if (v) u.voice = v; u.rate = 1.0; u.pitch = 1.0;
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = v ? v.lang : V.lang; if (v) u.voice = v;
+    if (uz) { u.pitch = 0.85; u.rate = 1.05; } else { u.pitch = 0.9; u.rate = 1.0; }
     u.onend = u.onerror = () => finish(side, my);
     try { speechSynthesis.speak(u); } catch (e) { finish(side, my); }
   }, 80);
