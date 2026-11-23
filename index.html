@@ -593,8 +593,20 @@ function renderRight() {
     el('td', { class:'mono r' }, el('span', { style:'display:inline-flex;align-items:center;gap:12px' }, spark(c.symbol, fb ? DATA_MIN : SMART_MIN), el('span', { class:'up', text:'+' + fmtUsd(gross ? c.buy : c.net) }))), el('td', { class:'mono r', text:String(c.whales) }),
     el('td', null, el('span', { class:'sig' + (c.sig === 'MARKET MAKER' ? ' mm' : ''), text:c.sig })),
     el('td', null, c.top ? txLink(c.top) : null)));
-  else if (Date.now() - START < 9000 && !lastTrade) body = skeleton(6, 10);
-  else body = [el('tr', null, el('td', { class:'msg', colspan:'6', text:L.emptyR }))];
+  else body = [];
+  { /* market-watch rows: live prices of the Top-15 coins fill the remaining ranks. Real CoinGecko/OKX/Binance data; clearly NOT inflow. */
+    const have = new Set(list.map((c) => c.symbol)), W = { uz:'NARX KUZATUVI', ru:'НАБЛЮДЕНИЕ ЦЕНЫ', en:'PRICE WATCH' }[state.lang];
+    const extra = TOP.map((t) => t[0]).filter((x) => !have.has(x) && price[x]).slice(0, Math.max(0, 15 - list.length));
+    extra.forEach((sy, k) => { const px = price[sy], up = px.ch >= 0;
+      body.push(el('tr', { class:'crow', 'data-rowchart':sy, 'data-chain':'', 'data-pool':'' },
+        el('td', null, el('span', { class:'rk', text:'#' + (list.length + k + 1) })),
+        el('td', null, coinBtn(sy, '', '')),
+        el('td', { class:'mono r' }, el('span', { class:'dim', text:'$' + (px.p >= 1 ? px.p.toLocaleString('en-US', { maximumFractionDigits:2 }) : px.p.toPrecision(3)) + '  ' }), el('span', { class:up ? 'up' : 'dn', text:(up ? '+' : '') + px.ch.toFixed(2) + '% 24h' })),
+        el('td', { class:'mono r dim', text:'—' }),
+        el('td', null, el('span', { class:'sig', text:W })),
+        el('td', null))); });
+    if (!body.length) body = Date.now() - START < 9000 && !lastTrade ? skeleton(6, 10) : skeleton(6, 15);
+  }
   $('pr').replaceChildren(
     el('div', { class:'phead' }, el('h2', { text:L.r }), el('span', { class:'sub', text:L.rsub }), status(gtSlow, lastTrade)),
     el('div', { class:'ai' }, aiHead(L.aiR, 'r'), ai,
