@@ -131,6 +131,8 @@
   .fundaddr { display: block; margin-top: 2px; font-size: 11px; }
   .fundaddr .addr { margin: 0; color: #4B5563; }
   tr.smart td:first-child { box-shadow: inset 3px 0 0 #F7931A; }
+  .tvbtn { margin-left: 8px; padding: 3px 9px; border-radius: 9999px; background: #0B0B0B; color: #F7931A; border: 1px solid #F7931A; font-size: 10.5px; font-weight: 800; letter-spacing: .03em; text-decoration: none; vertical-align: middle; white-space: nowrap; }
+  .tvbtn:hover { background: #F7931A; color: #000000; }
   .newtag { margin-left: 8px; padding: 2px 7px; border-radius: 9999px; background: #10B981; color: #000000; font-size: 10px; font-weight: 800; letter-spacing: 0.05em; vertical-align: middle; }
   .muted { color: var(--muted); }
   .empty { text-align: center; color: var(--muted); height: 120px; white-space: normal; }
@@ -232,6 +234,10 @@ const OKX = 'https://www.okx.com/api/v5/market/trades';
 const OKX_COINS = ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'SUI', 'TON', 'PEPE'];   // quoted in USDT
 const OKX_LIMIT = 500;            // max rows per request
 const OKX_GAP_MS = 50;            // fills of one taker order land within a few ms: merge them into one trade
+const STABLES = new Set(['USDT','USDC','DAI','PYUSD','USDE','SUSDE','FDUSD','TUSD','USDS','SUSDS','USD1','USDD','FRAX','LUSD','GUSD','USDP','BUSD','USDB','USDBC','USDC.E','USDT0','EURC','EURS','CRVUSD','GHO','USDY','USDG','RLUSD','USDX','USDZ','USR']);
+const isStable = (sym) => STABLES.has(String(sym || '').toUpperCase().trim());
+const TV_ALIAS = { WBTC: 'BTC', CBBTC: 'BTC', BTCB: 'BTC', TBTC: 'BTC', WETH: 'ETH', STETH: 'ETH', WSTETH: 'ETH', CBETH: 'ETH', WEETH: 'ETH', RETH: 'ETH', WSOL: 'SOL', MSOL: 'SOL', JITOSOL: 'SOL', BNSOL: 'SOL' };
+const tvSymbol = (sym) => { const k = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); return TV_ALIAS[k] || k; };
 const tagOf = (chain) => (CHAINS[chain] ? CHAINS[chain].tag : 'OKX');
 const isCex = (chain) => chain === 'okx';
 
@@ -376,9 +382,12 @@ function poolFromGT(p, chain) {
   const a = (p && p.attributes) || {};
   const id = (p && p.relationships && p.relationships.base_token && p.relationships.base_token.data && p.relationships.base_token.data.id) || '';
   const vol = a.volume_usd || {};
+  const qid = (p && p.relationships && p.relationships.quote_token && p.relationships.quote_token.data && p.relationships.quote_token.data.id) || '';
+  const parts = String(a.name || '').split(' / ');
   return {
-    chain, addr: String(a.address || ''), symbol: String(a.name || '').split(' / ')[0].trim() || '?',
+    chain, addr: String(a.address || ''), symbol: parts[0].trim() || '?', quote: (parts[1] || '').replace(/\s+\d+(\.\d+)?%$/, '').trim(),
     baseAddr: id.includes('_') ? id.slice(id.indexOf('_') + 1) : '',
+    quoteAddr: qid.includes('_') ? qid.slice(qid.indexOf('_') + 1) : '',
     liq: num(a.reserve_in_usd), vol1h: num(vol.h1) || num(vol.h24),
   };
 }
@@ -428,8 +437,14 @@ function parseTrades(json, pool) {
     const kind = a.kind === 'sell' ? 'sell' : 'buy';
     // amount of the pool's base coin: whichever side of the swap is the base token
     const fromIsBase = pool.baseAddr ? lc(a.from_token_address) === lc(pool.baseAddr) : kind === 'sell';
-    const amount = num(fromIsBase ? a.from_token_amount : a.to_token_amount);
-    out.push({ key: pool.chain + ':' + tx, chain: pool.chain, symbol: pool.symbol, kind, usd, amount, ts, tx, wallet: String(a.tx_from_address || '') });
+    let symbol = pool.symbol, side = kind, amount = num(fromIsBase ? a.from_token_amount : a.to_token_amount);
+    if (isStable(symbol)) {
+      if (!pool.quote || isStable(pool.quote)) continue;          // stable <-> stable swap: not a real crypto trade, skip
+      symbol = pool.quote; side = kind === 'buy' ? 'sell' : 'buy';  // the real coin is the other side of the pool
+      amount = num(fromIsBase ? a.to_token_amount : a.from_token_amount);
+    }
+    symbol = ({ WETH: 'ETH', WBTC: 'BTC', CBBTC: 'BTC', BTCB: 'BTC', WSOL: 'SOL' })[symbol.toUpperCase()] || symbol;   // wrapped coins shown as the real coin
+    out.push({ key: pool.chain + ':' + tx, chain: pool.chain, symbol, kind: side, usd, amount, ts, tx, wallet: String(a.tx_from_address || '') });
   }
   return out;
 }
@@ -442,7 +457,7 @@ const HIST_KEY = 'wt_hist', HIST_MS = 4 * 24 * 3600 * 1000, HIST_MAX = 4000;
 const hist = new Map();   // key -> [key, ts, chain, symbol, isBuy(1/0), usd]
 try {
   const cut = Date.now() - HIST_MS;
-  for (const r of JSON.parse(localStorage.getItem(HIST_KEY) || '[]')) if (Array.isArray(r) && r.length === 6 && r[1] >= cut && r[5] >= SMART_MIN) hist.set(r[0], r);
+  for (const r of JSON.parse(localStorage.getItem(HIST_KEY) || '[]')) if (Array.isArray(r) && r.length === 6 && r[1] >= cut && r[5] >= SMART_MIN && !isStable(r[3])) hist.set(r[0], r);
 } catch (e) { /* storage unavailable */ }
 function saveHist() {
   try {
@@ -456,7 +471,7 @@ function radarData() {
   const now = Date.now(), cut = now - HIST_MS, by = new Map();
   let oldest = now;
   for (const r of hist.values()) {
-    if (r[1] < cut || r[5] < SMART_MIN || r[5] > MAX_USD) continue;
+    if (r[1] < cut || r[5] < SMART_MIN || r[5] > MAX_USD || isStable(r[3])) continue;
     oldest = Math.min(oldest, r[1]);
     const k = String(r[3]).toUpperCase();
     let c = by.get(k); if (!c) { c = { symbol: k, buy: 0, sell: 0, nBuy: 0, nSell: 0 }; by.set(k, c); }
@@ -477,7 +492,7 @@ function loadCache() {
   try {
     const cut = Date.now() - CACHE_MS;
     for (const r of JSON.parse(localStorage.getItem(CACHE_KEY) || '[]')) {
-      if (r && r.key && r.ts >= cut && r.usd >= MIN_USD && r.usd <= MAX_USD) trades.set(r.key, { ...r, cached: true });
+      if (r && r.key && r.ts >= cut && r.usd >= MIN_USD && r.usd <= MAX_USD && !isStable(r.symbol)) trades.set(r.key, { ...r, cached: true });
     }
   } catch (e) { /* storage unavailable */ }
 }
@@ -587,6 +602,7 @@ function visibleRows() {
     (state.action === 'all' || r.kind === state.action) &&
     (state.net === 'all' || r.chain === state.net) &&
     (state.src === 'all' || (state.src === 'cex') === isCex(r.chain)) &&
+    !isStable(r.symbol) &&
     (!state.coin || r.symbol.toUpperCase() === state.coin));
   const pick = (k) => all.filter((r) => inRange(r.usd, k));
   let rows = pick(state.size), fallback = false;
@@ -620,6 +636,10 @@ function walletCell(r) {
   return el('td', null, addr, el('span', { class: 'src dex', text: t().wallet }));
 }
 
+function tvBtn(sym) {
+  const s = tvSymbol(sym);
+  return s ? el('a', { class: 'tvbtn', href: 'https://www.tradingview.com/chart/?symbol=OKX:' + encodeURIComponent(s) + 'USDT', target: '_blank', rel: 'noopener noreferrer', title: 'TradingView: OKX:' + s + 'USDT', text: 'Chart 📈' }) : null;
+}
 function rowEl(r, i, max) {
   const buy = r.kind === 'buy';
   const pct = max > 0 ? Math.max(1, Math.min(100, (r.usd / max) * 100)) : 0;
@@ -628,7 +648,7 @@ function rowEl(r, i, max) {
   return el('tr', { class: smart ? 'smart' : '' },
     el('td', null, el('span', { class: 'rank' + (i < 3 ? ' top' : ''), text: '#' + (i + 1) })),
     el('td', null, el('span', { class: 'badge ' + (buy ? 'buy' : 'sell'), text: buy ? t().buy : t().sell })),
-    el('td', null, el('span', { class: 'sym', text: r.symbol }), el('span', { class: 'tag', text: tagOf(r.chain) }), isNew ? el('span', { class: 'newtag', text: t().newTag }) : null),
+    el('td', null, el('span', { class: 'sym', text: r.symbol }), el('span', { class: 'tag', text: tagOf(r.chain) }), tvBtn(r.symbol), isNew ? el('span', { class: 'newtag', text: t().newTag }) : null),
     walletCell(r),
     el('td', { class: 'usd', title: '$' + r.usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
       el('span', { class: 'fill', style: 'width:' + pct.toFixed(2) + '%' }), el('span', { class: 'amt', text: fmtUsd(r.usd) })),
