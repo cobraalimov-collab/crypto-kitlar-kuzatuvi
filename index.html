@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<script>document.documentElement.setAttribute("data-theme","gold");try{localStorage.removeItem("wt_theme");}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+<title>ALIMOVAURA</title>
+<style>
+  /* Light work area (table, notice, footer) under a dark top panel (header + filters).
+     The variables below are the light set; .hdr/.tools re-declare them dark. */
+  :root, html[data-theme="gold"] {
+    --bg: #FFFFFF; --panel: #FFFFFF; --hover: #F8F9FA; --chip: #F1F2F4; --text: #111111; --muted: #4B5563;
+    --grid: #E5E5E5; --rowline: #EEEEEE; --logo: #FFFFFF; --logo-glow: rgba(255, 255, 255, 0.28);
+    --gold: #F7A600; --gold-text: #B87800;
+    --hdr-bg: #FFFDF7; --hdr-text: #374151; --hdr-line: #F7A600;
+    --btn: #F7A600; --btn-text: #000000; --btn-hover: #FFB92E;
+    --act-bg: rgba(247, 166, 0, 0.16); --act-text: #F7A600;
+    --bar: rgba(247, 166, 0, 0.32); --barEnd: rgba(247, 166, 0, 0.07);
+    --buy: #20B26C; --sell: #EF454A; --buy-bg: rgba(32, 178, 108, 0.12); --sell-bg: rgba(239, 69, 74, 0.12);
+  }
+  .hdr, .tools {
+    --bg: #0B0B0B; --panel: #0B0B0B; --hover: #1B1D21; --chip: #1D1F24; --text: #F7931A; --muted: #F7931A;
+    --grid: #26282D; --gold-text: #F7A600; --act-bg: rgba(247, 166, 0, 0.14);
+    color: var(--text);
+  }
+  :root {
+    --brand: #F7A600;
+    --font: "Inter", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; }
+
+  /* ---- shell: full viewport, header / filters / table / footer ---- */
+  .app { width: 100vw; height: 100vh; height: 100dvh; display: flex; flex-direction: column; }
+  .hdr, .tools { flex: none; display: flex; align-items: center; flex-wrap: nowrap; white-space: nowrap; overflow-x: auto; scrollbar-width: none; background: var(--panel); border-bottom: 1px solid var(--grid); }
+  .hdr::-webkit-scrollbar, .tools::-webkit-scrollbar { display: none; }
+  .hdr { justify-content: space-between; gap: 16px; padding: 0 24px; height: 64px; }
+  /* Twin capsules: logo and title share one identical pill spec (solid orange, black content). */
+  .logo, .tagline {
+    display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+    height: 40px; padding: 8px 24px; border: none; border-radius: 9999px; background-color: #F7931A;
+    font-family: "Montserrat", "Inter", ui-sans-serif, -apple-system, "Segoe UI", Arial, sans-serif;
+    font-size: 16px; font-weight: 800; letter-spacing: 0.5px; line-height: 1; color: #0B0B0B;
+    white-space: nowrap; user-select: none; flex: none;
+  }
+  .logo { text-transform: none; text-shadow: none; gap: 0; }
+  .logo .hi { color: #0B0B0B; text-shadow: none; }
+  .tagline { text-transform: uppercase; }
+  .tagline .whale { height: 24px; width: auto; flex: none; display: block; }
+  .tagline .whale path { fill: #0B0B0B; }
+  .tagline .ttl { font: inherit; letter-spacing: inherit; color: #0B0B0B; }
+  .tagline .ttl span { color: #0B0B0B; }
+  .tagline .w2, .tagline .w3 { margin-left: 0.4em; }
+  @media (max-width: 1300px) { .live { display: none; } }
+  @media (max-width: 900px) { .tagline { display: none; } }
+  .tools { gap: 10px; padding: 0 24px; height: 60px; }
+
+  .brand { display: flex; align-items: center; gap: 12px; flex: none; }
+  .live { display: flex; align-items: center; gap: 8px; padding: 5px 10px; border-radius: 6px; background: var(--chip); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--muted); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--buy); animation: pulse 1.8s infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(32, 178, 108, 0.55); } 70% { box-shadow: 0 0 0 7px rgba(32, 178, 108, 0); } 100% { box-shadow: 0 0 0 0 rgba(32, 178, 108, 0); } }
+  @media (prefers-reduced-motion: reduce) { .dot { animation: none; } }
+
+  .right { display: flex; align-items: center; gap: 16px; flex: none; }
+
+  .grp { display: flex; gap: 4px; flex: none; }
+  .sep { width: 1px; height: 22px; background: var(--grid); flex: none; margin: 0 10px; }
+  /* chips: flat, 6px radius, tinted when active (Bybit filter style) */
+  .pill {
+    border: 0; background: transparent; color: var(--muted); border-radius: 6px;
+    padding: 8px 14px; font: inherit; font-size: 13px; font-weight: 500; line-height: 1.2; cursor: pointer; flex: none; transition: background .12s, color .12s;
+  }
+  .pill:hover { background: var(--chip); color: var(--text); }
+  .pill[aria-pressed="true"], .pill[aria-pressed="true"]:hover { background: #F7931A; color: #000000 !important; border: none; border-radius: 9999px; font-weight: 800; }
+  .lang .pill { padding: 6px 10px; font-size: 12px; letter-spacing: 0.04em; }
+  .spacer { flex: 1 1 auto; min-width: 8px; }
+  .pill.sort { background: var(--chip); color: var(--text); font-weight: 600; }
+  .pill.sort:hover { background: var(--act-bg); color: var(--act-text); }
+  .gbtn {
+    border: 0; background: var(--btn); color: var(--btn-text); border-radius: 8px;
+    padding: 8px 18px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none;
+    display: inline-block; flex: none; white-space: nowrap; line-height: 1.2; transition: background .12s;
+  }
+  .gbtn:hover { background: var(--btn-hover); }
+  .gbtn[disabled] { opacity: .5; cursor: default; }
+
+  .notice { flex: none; display: none; padding: 9px 24px; font-size: 12.5px; background: var(--act-bg); color: var(--text); border-bottom: 1px solid var(--grid); }
+  .notice.show { display: block; }
+
+  /* ---- table: no vertical dividers, hairline rows, sticky muted header with gold underline ---- */
+  .grid { flex: 1 1 auto; min-height: 0; overflow: auto; background: var(--bg); padding: 10px 12px 0; }
+  table { width: 100%; min-width: 1130px; border-collapse: separate; border-spacing: 0; table-layout: fixed; font-size: 14px; font-variant-numeric: tabular-nums; }
+  col.c0 { width: 76px; } col.c1 { width: 150px; } col.c3 { width: 200px; }
+  col.c4 { width: 220px; } col.c5 { width: 240px; } col.c6 { width: 190px; }
+  th, td { padding: 0 24px; height: 56px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-bottom: 1px solid var(--rowline); }
+  /* header row: solid orange rounded bar with black bold labels */
+  thead th {
+    position: sticky; top: 0; z-index: 2; height: 40px; background: #F7931A; color: #000000;
+    font-size: 11.5px; font-weight: 800; letter-spacing: 0.06em; border-bottom: none;
+    box-shadow: 0 -10px 0 var(--bg);
+  }
+  thead th:first-child { border-radius: 9999px 0 0 9999px; padding-left: 28px; }
+  thead th:last-child { border-radius: 0 9999px 9999px 0; padding-right: 28px; }
+  .num { text-align: right; }
+  tbody tr:hover td { background: var(--hover); }
+  .mono { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .rank { font-family: var(--mono); font-weight: 600; color: var(--muted); }
+  .rank.top { color: var(--gold-text); }
+  .badge { display: inline-block; min-width: 96px; text-align: center; padding: 5px 12px; border-radius: 4px; font-size: 12px; font-weight: 700; letter-spacing: 0.05em; }
+  .badge.buy { background: var(--buy-bg); color: var(--buy); }
+  .badge.sell { background: var(--sell-bg); color: var(--sell); }
+  .sym { font-weight: 600; font-size: 15px; }
+  .tag { margin-left: 8px; font-size: 10.5px; font-weight: 600; letter-spacing: .05em; padding: 2px 6px; border-radius: 4px; color: var(--muted); background: var(--chip); }
+  /* USD cell: soft gold bar behind the number = size relative to the #1 trade */
+  td.usd { position: relative; padding: 0; }
+  td.usd .fill { position: absolute; left: 0; top: 8px; bottom: 8px; border-radius: 0 4px 4px 0; background: linear-gradient(90deg, var(--bar), var(--barEnd)); }
+  td.usd .amt { position: relative; display: block; padding: 0 24px; line-height: 56px; text-align: right; font-family: var(--mono); font-size: 14.5px; font-weight: 600; }
+  .act { text-align: right; }
+  .muted { color: var(--muted); }
+  .empty { text-align: center; color: var(--muted); height: 120px; white-space: normal; }
+
+  /* ---- status footer ---- */
+  .foot { flex: none; border-top: 1px solid var(--grid); background: var(--panel); padding: 8px 24px; font-size: 11.5px; color: var(--muted); }
+  .foot .row { display: flex; justify-content: space-between; gap: 12px; white-space: nowrap; overflow: hidden; }
+  .note { margin-top: 3px; line-height: 1.45; white-space: normal; max-height: 3em; overflow: hidden; }
+
+  @media (max-width: 720px) {
+    .live span.t { display: none; } .live { padding: 7px; }
+    .hdr, .tools { padding: 0 12px; } .foot { padding: 8px 12px; } .note { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hdr" id="hdr"></header>
+  <nav class="tools" id="tools"></nav>
+  <div class="notice" id="notice" role="status"></div>
+  <main class="grid">
+    <table>
+      <colgroup><col class="c0"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"></colgroup>
+      <thead><tr id="head"></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </main>
+  <footer class="foot">
+    <div class="row"><span id="statusL"></span><span id="statusR"></span></div>
+    <div class="note" id="note"></div>
+  </footer>
+</div>
+
+<script>
+/* ============================================================== config / i18n */
+const MIN_USD = 10000;            // minimum whale swap size fetched / shown
+const MAX_ROWS = 50;              // top-50 unique transactions
+const REFRESH_MS = 12000;         // silent auto-refresh
+const POOLS_PER_CHAIN = 6;
+const TRADES_PER_CYCLE = 5;       // 5 calls / 12s + discovery stays under GeckoTerminal's public ~30/min limit
+const GT = 'https://api.geckoterminal.com/api/v2';
+
+const CHAINS = {
+  solana:   { gt: 'solana', tag: 'SOL',  explorer: 'https://solscan.io/tx/',   hash: /^[1-9A-HJ-NP-Za-km-z]{60,100}$/ },
+  ethereum: { gt: 'eth',    tag: 'ETH',  explorer: 'https://etherscan.io/tx/', hash: /^0x[0-9a-fA-F]{64}$/ },
+  base:     { gt: 'base',   tag: 'BASE', explorer: 'https://basescan.org/tx/', hash: /^0x[0-9a-fA-F]{64}$/ },
+};
+
+const I18N = {
+  uz: {
+    badge: ['CRYPTO', 'KITLAR', 'KUZATUVI'],
+    actions: ['Hammasi', 'Sotib oldi', 'Sotdi'], netAll: 'Barchasi', refresh: 'Yangilash',
+    sort: { usd: 'Eng katta summa', time: 'Eng yangi' },
+    cols: ['#', 'HOLAT', 'KOIN', 'SUMMA (USD)', 'KOIN MIQDORI', 'ANIQ DATA', 'FAKT-CHEK'],
+    buy: 'SOTIB OLDI', sell: 'SOTDI', verify: 'Tekshirish ↗',
+    loading: 'Haqiqiy savdolar yuklanmoqda…', empty: 'Tanlangan filtrlarga mos savdo topilmadi.',
+    updated: 'Yangilandi', top: 'Top', of: 'jami', unique: 'noyob tranzaksiya', src: 'Manba',
+    degraded: 'GeckoTerminal sekin yoki cheklangan. Saqlangan savdolar ko‘rsatilmoqda, avtomatik qayta uriniladi.',
+    none: 'GeckoTerminal javob bermayapti. Avtomatik qayta uriniladi.',
+    note: 'Faqat haqiqiy $10,000+ savdolar (GeckoTerminal ochiq API, kalit va server kerak emas). Reyting: tanlangan tartib bo‘yicha top 50, tx_hash bo‘yicha noyob. Holat tanga (base token) bo‘yicha: SOTIB OLDI = tanga sotib olindi. Sana — qurilmangiz vaqt zonasida.',
+  },
+  ru: {
+    badge: ['CRYPTO', 'КИТЫ', 'МОНИТОРИНГ'],
+    actions: ['Все', 'Купил', 'Продал'], netAll: 'Все', refresh: 'Обновить',
+    sort: { usd: 'Самые крупные', time: 'Самые новые' },
+    cols: ['#', 'СТАТУС', 'МОНЕТА', 'СУММА (USD)', 'КОЛ-ВО МОНЕТ', 'ТОЧНАЯ ДАТА', 'ФАКТЧЕК'],
+    buy: 'КУПИЛ', sell: 'ПРОДАЛ', verify: 'Проверить ↗',
+    loading: 'Загрузка реальных сделок…', empty: 'Нет сделок, подходящих под выбранные фильтры.',
+    updated: 'Обновлено', top: 'Топ', of: 'всего', unique: 'уникальных транзакций', src: 'Источник',
+    degraded: 'GeckoTerminal медленный или ограничен. Показаны сохранённые сделки, повтор выполняется автоматически.',
+    none: 'GeckoTerminal не отвечает. Повтор выполняется автоматически.',
+    note: 'Только реальные сделки от $10,000 (открытый API GeckoTerminal, без ключей и сервера). Рейтинг: топ-50 в выбранном порядке, уникальные по tx_hash. Статус относится к монете (base token): КУПИЛ = монета куплена. Дата — в часовом поясе вашего устройства.',
+  },
+  en: {
+    badge: ['CRYPTO', 'WHALE', 'TRACKER'],
+    actions: ['All', 'Bought', 'Sold'], netAll: 'All', refresh: 'Refresh',
+    sort: { usd: 'Largest', time: 'Newest' },
+    cols: ['#', 'STATUS', 'COIN', 'AMOUNT (USD)', 'COIN AMOUNT', 'EXACT DATE', 'FACT-CHECK'],
+    buy: 'BOUGHT', sell: 'SOLD', verify: 'Verify ↗',
+    loading: 'Loading real on-chain trades…', empty: 'No trades match the selected filters.',
+    updated: 'Updated', top: 'Top', of: 'of', unique: 'unique transactions', src: 'Source',
+    degraded: 'GeckoTerminal is slow or rate-limited. Showing stored trades and retrying automatically.',
+    none: 'GeckoTerminal is not responding. Retrying automatically.',
+    note: 'Real trades of $10,000+ only (GeckoTerminal public API, no keys, no backend). Ranking: top 50 in the selected order, unique by tx_hash. Status refers to the coin (base token): BOUGHT = the coin was bought. Dates use your device time zone.',
+  },
+};
+
+/* ============================================================== state */
+const state = { lang: 'uz', action: 'all', net: 'all', min: 10000, sort: 'usd' };
+try {
+  const l = localStorage.getItem('wt_lang'); if (l && I18N[l]) state.lang = l;
+} catch (e) { /* storage unavailable */ }
+document.documentElement.setAttribute('data-theme', 'gold');   // single fixed dark + gold design
+
+const trades = new Map();   // "chain:tx_hash" -> trade (unique per transaction)
+let pools = [];             // monitored pools, interleaved across chains
+let rr = 0;                 // round-robin pointer
+let lastDiscovery = 0;
+let lastUpdate = null;
+let inflight = false;
+let version = 0;
+let gtCooldownUntil = 0;
+let errors = [];
+
+/* ============================================================== helpers */
+const num = (v) => { const n = typeof v === 'number' ? v : parseFloat(v); return Number.isFinite(n) ? n : 0; };
+const lc = (s) => String(s || '').toLowerCase();
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const pad = (n) => String(n).padStart(2, '0');
+const $ = (id) => document.getElementById(id);
+const t = () => I18N[state.lang];
+
+function el(tag, props, ...kids) {
+  const e = document.createElement(tag);
+  if (props) for (const [k, v] of Object.entries(props)) {
+    if (k === 'class') e.className = v; else if (k === 'text') e.textContent = v; else e.setAttribute(k, v);
+  }
+  for (const kid of kids) if (kid != null) e.append(kid);
+  return e;
+}
+
+function fmtDate(ms) {
+  const d = new Date(ms);
+  return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+const fmtUsd = (n) => '$' + Math.round(n).toLocaleString('en-US');
+function fmtCoins(n) {
+  if (!(n > 0)) return '0';
+  if (n >= 1000) return n.toLocaleString('en-US', { maximumFractionDigits: 1 });
+  if (n >= 1) return n.toLocaleString('en-US', { maximumFractionDigits: 3 });
+  if (n >= 0.0001) return n.toPrecision(4);
+  return n.toExponential(2);
+}
+
+/* Plain fetch() only, with no abort/cancel objects passed in. The timeout is a promise race. */
+async function fetchJSON(url, ms) {
+  let timer;
+  const timeout = new Promise((_, rej) => { timer = setTimeout(() => rej(new Error('timeout')), ms || 10000); });
+  try {
+    const res = await Promise.race([fetch(url), timeout]);
+    if (!res.ok) throw new Error(res.status === 429 ? 'rate limited (429)' : 'HTTP ' + res.status);
+    return await Promise.race([res.json(), timeout]);
+  } finally { clearTimeout(timer); }
+}
+
+/* Calls reserve time slots 2.2s apart (~27/min) but run concurrently, so one slow pool never blocks the others. */
+let gtNext = 0;
+async function gtCall(path) {
+  if (Date.now() < gtCooldownUntil) throw new Error('cooldown');
+  const now = Date.now();
+  const slot = Math.max(now, gtNext);
+  gtNext = slot + 2200;
+  if (slot > now) await sleep(slot - now);
+  if (Date.now() < gtCooldownUntil) throw new Error('cooldown');
+  try {
+    return await fetchJSON(GT + path, 9000);
+  } catch (e) {
+    if (/429|timeout/.test(e.message)) gtCooldownUntil = Date.now() + 60000;
+    throw e;
+  }
+}
+
+/* ============================================================== pools: GeckoTerminal trending_pools */
+function poolFromGT(p, chain) {
+  const a = (p && p.attributes) || {};
+  const id = (p && p.relationships && p.relationships.base_token && p.relationships.base_token.data && p.relationships.base_token.data.id) || '';
+  const vol = a.volume_usd || {};
+  return {
+    chain, addr: String(a.address || ''), symbol: String(a.name || '').split(' / ')[0].trim() || '?',
+    baseAddr: id.includes('_') ? id.slice(id.indexOf('_') + 1) : '',
+    liq: num(a.reserve_in_usd), vol1h: num(vol.h1) || num(vol.h24),
+  };
+}
+
+async function discoverPools() {
+  const results = await Promise.allSettled(Object.keys(CHAINS).map(async (chain) => {
+    const j = await gtCall(`/networks/${CHAINS[chain].gt}/trending_pools?duration=1h&page=1`);
+    return { chain, list: (j.data || []).map((p) => poolFromGT(p, chain)) };
+  }));
+  const picked = {};
+  for (const chain of Object.keys(CHAINS)) picked[chain] = [];
+  results.forEach((r, i) => {
+    const chain = Object.keys(CHAINS)[i];
+    if (r.status !== 'fulfilled') { errors.push(`trending ${chain}: ${r.reason && r.reason.message}`); return; }
+    const seen = new Set();
+    picked[chain] = r.value.list
+      .filter((p) => p.addr && p.liq >= 100000 && !seen.has(lc(p.addr)) && seen.add(lc(p.addr)))
+      .sort((a, b) => b.vol1h - a.vol1h)
+      .slice(0, POOLS_PER_CHAIN);
+  });
+  const inter = [];
+  for (let i = 0; i < POOLS_PER_CHAIN; i++) for (const chain of Object.keys(CHAINS)) if (picked[chain][i]) inter.push(picked[chain][i]);
+  if (inter.length) { pools = inter; lastDiscovery = Date.now(); }
+}
+
+/* ============================================================== trades */
+function parseTrades(json, pool) {
+  const out = [];
+  for (const row of (json && json.data) || []) {
+    const a = (row && row.attributes) || {};
+    const usd = num(a.volume_in_usd), tx = String(a.tx_hash || ''), ts = Date.parse(a.block_timestamp);
+    if (!tx || !(usd >= MIN_USD) || !Number.isFinite(ts)) continue;
+    const kind = a.kind === 'sell' ? 'sell' : 'buy';
+    // amount of the pool's base coin: whichever side of the swap is the base token
+    const fromIsBase = pool.baseAddr ? lc(a.from_token_address) === lc(pool.baseAddr) : kind === 'sell';
+    const amount = num(fromIsBase ? a.from_token_amount : a.to_token_amount);
+    out.push({ key: pool.chain + ':' + tx, chain: pool.chain, symbol: pool.symbol, kind, usd, amount, ts, tx });
+  }
+  return out;
+}
+
+/** One row per tx_hash (keeps the largest swap if a tx touches several pools). Retains recent 24h only. */
+function addTrades(list) {
+  let changed = false;
+  for (const tr of list) {
+    const cur = trades.get(tr.key);
+    if (!cur || tr.usd > cur.usd) { trades.set(tr.key, tr); changed = true; }
+  }
+  if (!changed) return;
+  const cutoff = Date.now() - 24 * 3600 * 1000;
+  for (const [k, v] of trades) if (v.ts < cutoff) trades.delete(k);
+  if (trades.size > 1500) {                                   // keep memory bounded: drop smallest
+    const keep = [...trades.values()].sort((a, b) => b.usd - a.usd).slice(0, 1000);
+    trades.clear(); for (const x of keep) trades.set(x.key, x);
+  }
+  version++;
+}
+
+async function fetchPoolTrades(pool) {
+  const j = await gtCall(`/networks/${CHAINS[pool.chain].gt}/pools/${encodeURIComponent(pool.addr)}/trades?trade_volume_in_usd_greater_than=${MIN_USD}`);
+  lastUpdate = new Date();
+  addTrades(parseTrades(j, pool));
+  render();                                                    // progressive: show each pool as soon as it lands
+}
+
+/* ============================================================== refresh cycle */
+async function cycle() {
+  if (inflight) return;
+  inflight = true; errors = [];
+  const btn = $('refresh'); if (btn) btn.disabled = true;
+  try {
+    if (!pools.length || Date.now() - lastDiscovery > 180000) await discoverPools();
+    const n = lastUpdate ? TRADES_PER_CYCLE : 6;
+    const picks = [];
+    for (let i = 0; i < n && pools.length; i++) picks.push(pools[rr++ % pools.length]);
+    const res = await Promise.allSettled(picks.map(fetchPoolTrades));   // slow/failed pools never block the rest
+    res.forEach((r, i) => { if (r.status === 'rejected') errors.push(`trades ${picks[i].chain}: ${r.reason && r.reason.message}`); });
+  } finally {
+    inflight = false;
+    const b = $('refresh'); if (b) b.disabled = false;
+    render(true);
+  }
+}
+
+/* ============================================================== view */
+function visibleRows() {
+  const rows = [...trades.values()].filter((r) =>
+    (state.action === 'all' || r.kind === state.action) &&
+    (state.net === 'all' || r.chain === state.net) && r.usd >= state.min);
+  rows.sort(state.sort === 'usd' ? (a, b) => b.usd - a.usd || b.ts - a.ts : (a, b) => b.ts - a.ts || b.usd - a.usd);
+  return { rows: rows.slice(0, MAX_ROWS), total: rows.length };
+}
+
+function verifyCell(r) {
+  const c = CHAINS[r.chain];
+  if (!c.hash.test(r.tx)) return el('span', { class: 'muted', text: '—' });
+  return el('a', { class: 'gbtn', href: c.explorer + encodeURIComponent(r.tx), target: '_blank', rel: 'noopener noreferrer', text: t().verify });
+}
+
+function rowEl(r, i, max) {
+  const buy = r.kind === 'buy';
+  const pct = max > 0 ? Math.max(1, Math.min(100, (r.usd / max) * 100)) : 0;
+  return el('tr', null,
+    el('td', null, el('span', { class: 'rank' + (i < 3 ? ' top' : ''), text: '#' + (i + 1) })),
+    el('td', null, el('span', { class: 'badge ' + (buy ? 'buy' : 'sell'), text: buy ? t().buy : t().sell })),
+    el('td', null, el('span', { class: 'sym', text: r.symbol }), el('span', { class: 'tag', text: CHAINS[r.chain].tag })),
+    el('td', { class: 'usd', title: '$' + r.usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
+      el('span', { class: 'fill', style: 'width:' + pct.toFixed(2) + '%' }), el('span', { class: 'amt', text: fmtUsd(r.usd) })),
+    el('td', { class: 'mono num' }, fmtCoins(r.amount) + ' ' + r.symbol),
+    el('td', { class: 'mono', title: new Date(r.ts).toISOString() }, fmtDate(r.ts)),
+    el('td', { class: 'act' }, verifyCell(r)));
+}
+
+function logoEl() {
+  const d = document.createElement('div');
+  d.className = 'logo';
+  d.setAttribute('role', 'img'); d.setAttribute('aria-label', 'alimovaura');
+  d.append('al', el('span', { class: 'hi', text: 'i' }), 'movaura');   // change which letter is gold here
+  return d;
+}
+
+const WHALE_SVG = '<svg class="whale" viewBox="0 0 56 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+  '<path fill="#0B0B0B" fill-rule="evenodd" d="M2 21C2 12 11 8 21 8C29 8 35 11 38.5 16C40.5 19 42.5 18.5 43.5 15.5C44.2 13.2 44 11 43 9C41.5 8.6 40.2 7.2 39.5 5C42 5.5 44.5 6.8 46.2 9C47.8 6.8 50.5 5.4 54 5C53 7.4 51.6 8.8 49.6 9.4C49.2 12 48.4 14.5 46.8 17.2C44.5 21 40 23.5 34.5 24C31 27.8 25.5 30 19 30C9 30 2 27 2 21ZM9.4 19.2a1.7 1.7 0 1 0 3.4 0a1.7 1.7 0 1 0-3.4 0Z"/>' +
+  '<path fill="#0B0B0B" d="M14.5 1.2h2.2v3.6h-2.2zM10.2 2.8l1.5-1.2l1.9 2.9l-1.7 1.1zM18.6 2.8l-1.5-1.2l-1.9 2.9l1.7 1.1z"/>' +
+'</svg>';
+
+function renderChrome() {
+  const L = t();
+  document.documentElement.lang = state.lang;
+  document.title = 'alimovaura';
+  const pill = (group, value, label) => el('button', { class: 'pill', type: 'button', 'data-g': group, 'data-v': String(value), 'aria-pressed': String(state[group] === value), text: label });
+  const live = el('div', { class: 'live' }, el('span', { class: 'dot' }), el('span', { class: 't', text: 'LIVE ON-CHAIN FEED' }));
+  $('hdr').replaceChildren(
+    el('div', { class: 'brand' }, logoEl(), (() => { const d = el('div', { class: 'tagline', 'aria-label': L.badge.join(' ') }); d.innerHTML = WHALE_SVG; d.append(el('span', { class: 'ttl' }, el('span', { class: 'w1', text: L.badge[0] }), el('span', { class: 'w2', text: L.badge[1] }), el('span', { class: 'w3', text: L.badge[2] }))); return d; })(), live),
+    el('div', { class: 'right' },
+      el('div', { class: 'grp lang' }, ...['uz', 'ru', 'en'].map((l) => el('button', { class: 'pill', type: 'button', 'data-lang': l, 'aria-pressed': String(state.lang === l), text: l.toUpperCase() })))));
+  $('tools').replaceChildren(
+    el('div', { class: 'grp' }, pill('action', 'all', L.actions[0]), pill('action', 'buy', L.actions[1]), pill('action', 'sell', L.actions[2])),
+    el('div', { class: 'sep' }),
+    el('div', { class: 'grp' }, pill('net', 'all', L.netAll), pill('net', 'solana', 'Solana'), pill('net', 'ethereum', 'Ethereum'), pill('net', 'base', 'Base')),
+    el('div', { class: 'sep' }),
+    el('div', { class: 'grp' }, pill('min', 10000, '$10K+'), pill('min', 25000, '$25K+'), pill('min', 50000, '$50K+'), pill('min', 100000, '$100K+')),
+    el('div', { class: 'spacer' }),
+    el('button', { class: 'pill sort', id: 'sortToggle', type: 'button', title: state.sort === 'usd' ? L.sort.time : L.sort.usd, text: '⇅ ' + L.sort[state.sort] }),
+    el('button', { class: 'gbtn', id: 'refresh', type: 'button', text: L.refresh }));
+  $('refresh').disabled = inflight;
+  $('head').replaceChildren(...L.cols.map((c, i) => el('th', { class: i === 3 || i === 4 ? 'num' : '', text: c })));
+  $('note').textContent = L.note;
+}
+
+let renderedVersion = -1, renderedKey = '';
+function render(force) {
+  const key = [state.lang, state.action, state.net, state.min, state.sort, errors.length, inflight].join('|');
+  if (!force && version === renderedVersion && key === renderedKey) return;
+  const L = t();
+  const { rows, total } = visibleRows();
+  const tbody = $('rows');
+  if (!rows.length) {
+    const msg = trades.size ? L.empty : (lastUpdate || errors.length ? (errors.length ? L.none : L.empty) : L.loading);
+    tbody.replaceChildren(el('tr', null, el('td', { class: 'empty', colspan: '7', text: msg })));
+  } else {
+    const max = rows.reduce((m, r) => Math.max(m, r.usd), 0);
+    tbody.replaceChildren(...rows.map((r, i) => rowEl(r, i, max)));
+  }
+
+  const slow = Date.now() < gtCooldownUntil || errors.length > 0;
+  const notice = $('notice');
+  notice.textContent = slow && trades.size ? L.degraded : '';
+  notice.className = slow && trades.size ? 'notice show' : 'notice';
+
+  $('statusL').textContent = lastUpdate
+    ? `${L.updated} ${pad(lastUpdate.getHours())}:${pad(lastUpdate.getMinutes())}:${pad(lastUpdate.getSeconds())} · ${L.top} ${rows.length} ${L.of} ${total} ${L.unique}` : '';
+  $('statusR').textContent = lastUpdate ? `${L.src}: GeckoTerminal` : '';
+  renderedVersion = version; renderedKey = key;
+}
+
+/* ============================================================== wiring */
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  if (b.id === 'refresh') { cycle(); return; }
+  if (b.id === 'sortToggle') { state.sort = state.sort === 'usd' ? 'time' : 'usd'; renderChrome(); render(true); return; }
+  if (b.dataset.lang) { setLang(b.dataset.lang); return; }
+  if (b.dataset.g) {
+    const g = b.dataset.g;
+    state[g] = g === 'min' ? Number(b.dataset.v) : b.dataset.v;
+    renderChrome(); render(true);
+  }
+});
+
+function setLang(l) {
+  if (!I18N[l]) return;
+  state.lang = l;
+  try { localStorage.setItem('wt_lang', l); } catch (e) { /* ignore */ }
+  renderChrome(); render(true);
+}
+
+setInterval(() => { if (!document.hidden) cycle(); }, REFRESH_MS);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) cycle(); });
+
+document.documentElement.style.colorScheme = 'light';
+renderChrome();
+render(true);
+cycle();
+</script>
+</body>
+</html>
