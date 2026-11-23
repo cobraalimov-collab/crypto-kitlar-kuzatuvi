@@ -57,7 +57,7 @@
   .tagline .w2, .tagline .w3 { margin-left: 0.4em; }
   @media (max-width: 1300px) { .live { display: none; } }
   @media (max-width: 900px) { .tagline { display: none; } }
-  .tools { gap: 10px; padding: 0 24px; height: 60px; }
+  .tools { gap: 8px 4px; padding: 8px 16px; min-height: 60px; flex-wrap: wrap; white-space: normal; overflow: visible; }
 
   .brand { display: flex; align-items: center; gap: 12px; flex: none; }
   .live { display: flex; align-items: center; gap: 8px; padding: 5px 10px; border-radius: 6px; background: var(--chip); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--muted); }
@@ -67,12 +67,12 @@
 
   .right { display: flex; align-items: center; gap: 16px; flex: none; }
 
-  .grp { display: flex; gap: 4px; flex: none; }
-  .sep { width: 1px; height: 22px; background: var(--grid); flex: none; margin: 0 10px; }
+  .grp { display: flex; gap: 2px; flex: none; }
+  .sep { width: 1px; height: 22px; background: var(--grid); flex: none; margin: 0 4px; }
   /* chips: flat, 6px radius, tinted when active (Bybit filter style) */
   .pill {
     border: 0; background: transparent; color: var(--muted); border-radius: 6px;
-    padding: 8px 14px; font: inherit; font-size: 13px; font-weight: 500; line-height: 1.2; cursor: pointer; flex: none; transition: background .12s, color .12s;
+    padding: 8px 8px; font: inherit; font-size: 12.5px; font-weight: 500; line-height: 1.2; cursor: pointer; flex: none; transition: background .12s, color .12s;
   }
   .pill:hover { background: var(--chip); color: var(--text); }
   .pill[aria-pressed="true"], .pill[aria-pressed="true"]:hover { background: #F7931A; color: #000000 !important; border: none; border-radius: 9999px; font-weight: 800; }
@@ -82,7 +82,7 @@
   .pill.sort:hover { background: var(--act-bg); color: var(--act-text); }
   .gbtn {
     border: 0; background: var(--btn); color: var(--btn-text); border-radius: 8px;
-    padding: 8px 18px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none;
+    padding: 8px 14px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none;
     display: inline-block; flex: none; white-space: nowrap; line-height: 1.2; transition: background .12s;
   }
   .gbtn:hover { background: var(--btn-hover); }
@@ -93,10 +93,10 @@
 
   /* ---- table: no vertical dividers, hairline rows, sticky muted header with gold underline ---- */
   .grid { flex: 1 1 auto; min-height: 0; overflow: auto; background: var(--bg); padding: 10px 12px 0; }
-  table { width: 100%; min-width: 1130px; border-collapse: separate; border-spacing: 0; table-layout: fixed; font-size: 14px; font-variant-numeric: tabular-nums; }
-  col.c0 { width: 76px; } col.c1 { width: 150px; } col.c3 { width: 200px; }
-  col.c4 { width: 220px; } col.c5 { width: 240px; } col.c6 { width: 190px; }
-  th, td { padding: 0 24px; height: 56px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-bottom: 1px solid var(--rowline); }
+  table { width: 100%; min-width: 1350px; border-collapse: separate; border-spacing: 0; table-layout: fixed; font-size: 14px; font-variant-numeric: tabular-nums; }
+  col.c0 { width: 64px; } col.c1 { width: 132px; } col.c3 { width: 290px; } col.c4 { width: 172px; }
+  col.c5 { width: 192px; } col.c6 { width: 188px; } col.c7 { width: 150px; }
+  th, td { padding: 0 14px; height: 56px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-bottom: 1px solid var(--rowline); }
   /* header row: solid orange rounded bar with black bold labels */
   thead th {
     position: sticky; top: 0; z-index: 2; height: 40px; background: #F7931A; color: #000000;
@@ -118,10 +118,56 @@
   /* USD cell: soft gold bar behind the number = size relative to the #1 trade */
   td.usd { position: relative; padding: 0; }
   td.usd .fill { position: absolute; left: 0; top: 8px; bottom: 8px; border-radius: 0 4px 4px 0; background: linear-gradient(90deg, var(--bar), var(--barEnd)); }
-  td.usd .amt { position: relative; display: block; padding: 0 24px; line-height: 56px; text-align: right; font-family: var(--mono); font-size: 14.5px; font-weight: 600; }
+  td.usd .amt { position: relative; display: block; padding: 0 14px; line-height: 56px; text-align: right; font-family: var(--mono); font-size: 14.5px; font-weight: 600; }
   .act { text-align: right; }
+  @media (max-width: 1580px) { .tools { padding: 8px 12px; } .tools .pill { padding: 8px 6px; font-size: 12px; } .tools .sep { margin: 0 2px; } .tools .gbtn { padding: 8px 12px; } }
+  .addr { color: var(--text); text-decoration: none; margin-right: 8px; }
+  a.addr:hover { color: #B87800; text-decoration: underline; }
+  .src { display: inline-block; padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; letter-spacing: 0.03em; vertical-align: middle; }
+  .src.dex { background: #EEF0F3; color: #374151; }
+  .src.cex { background: #111111; color: #F7931A; }
+  .src.smart { background: #F7931A; color: #000000; margin-right: 8px; letter-spacing: 0.04em; }
+  .fund { font-weight: 800; margin-right: 6px; }
+  .fundaddr { display: block; margin-top: 2px; font-size: 11px; }
+  .fundaddr .addr { margin: 0; color: #4B5563; }
+  tr.smart td:first-child { box-shadow: inset 3px 0 0 #F7931A; }
+  .newtag { margin-left: 8px; padding: 2px 7px; border-radius: 9999px; background: #10B981; color: #000000; font-size: 10px; font-weight: 800; letter-spacing: 0.05em; vertical-align: middle; }
   .muted { color: var(--muted); }
   .empty { text-align: center; color: var(--muted); height: 120px; white-space: normal; }
+
+
+  /* ---- AI whale radar: dark card between the filter bar and the table ---- */
+  .radarwrap { flex: none; padding: 12px 12px 0; background: var(--bg); }
+  .radar { background: #0F0F12; border: 1px solid rgba(247, 147, 26, 0.4); border-radius: 12px; padding: 12px 16px; color: #FFFFFF; }
+  .rhead { display: flex; align-items: center; gap: 14px; white-space: nowrap; overflow: hidden; }
+  .rlive { display: inline-flex; align-items: center; gap: 8px; flex: none; padding: 5px 12px; border-radius: 9999px; background: rgba(247, 147, 26, 0.12); color: #F7931A; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; }
+  .rdot { width: 7px; height: 7px; border-radius: 50%; background: #F7931A; animation: blink2 1.4s ease-in-out infinite; }
+  @keyframes blink2 { 0%, 100% { opacity: 1; box-shadow: 0 0 8px 1px rgba(247, 147, 26, 0.7); } 50% { opacity: 0.25; box-shadow: none; } }
+  @media (prefers-reduced-motion: reduce) { .rdot { animation: none; } }
+  .rtitle { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; color: #A7ADB6; }
+  .rtitle b { color: #F7931A; font-weight: 800; letter-spacing: 0.04em; }
+  .rspan { flex: none; font-size: 11.5px; color: #8E949C; font-variant-numeric: tabular-nums; }
+  .rcols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+  .rcol { background: #17181C; border: 1px solid #26282D; border-radius: 10px; padding: 10px 12px; min-width: 0; }
+  .rcol.in { border-top: 2px solid #10B981; } .rcol.out { border-top: 2px solid #F6465D; }
+  .rcoltitle { font-size: 11.5px; font-weight: 800; letter-spacing: 0.05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rcol.in .rcoltitle { color: #10B981; } .rcol.out .rcoltitle { color: #F6465D; }
+  .rlist { margin-top: 6px; display: flex; flex-direction: column; gap: 2px; }
+  button.rcoin { display: flex; align-items: center; gap: 10px; width: 100%; background: transparent; border: 0; border-radius: 8px; padding: 5px 8px; color: #FFFFFF; font: inherit; cursor: pointer; text-align: left; }
+  button.rcoin:hover { background: #22252B; }
+  button.rcoin.on { background: rgba(247, 147, 26, 0.18); box-shadow: inset 0 0 0 1px #F7931A; }
+  .rcoin .rk { width: 24px; flex: none; color: #F7931A; font-family: var(--mono); font-size: 12px; font-weight: 700; }
+  .rcoin .nm { min-width: 64px; font-size: 14px; font-weight: 800; }
+  .rcoin .cnt { flex: 1 1 auto; min-width: 0; font-size: 12px; color: #A7ADB6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rcoin .pct { flex: none; width: 52px; text-align: right; font-family: var(--mono); font-size: 12px; font-weight: 700; color: #D1D5DB; }
+  .rcoin .amt { flex: none; padding: 3px 12px; border-radius: 9999px; font-family: var(--mono); font-size: 13px; font-weight: 800; }
+  .rcoin .amt.g { background: #10B981; color: #000000; } .rcoin .amt.r { background: #F6465D; color: #FFFFFF; }
+  .rclear { flex: none; padding: 4px 12px; border: 0; border-radius: 9999px; background: #F7931A; color: #000000; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
+  .rsum { margin-top: 10px; padding-top: 8px; border-top: 1px solid #26282D; font-size: 13px; line-height: 1.45; color: #F7931A; font-weight: 600; }
+  .rempty { padding: 8px; font-size: 13px; color: #A7ADB6; }
+  @media (max-width: 900px) { .rcols { grid-template-columns: 1fr; } .rspan { display: none; } }
+  @media (max-height: 820px) { .rlist button.rcoin:nth-child(n+4) { display: none; } }
+  @media (max-height: 620px) { .radarwrap { display: none; } }
 
   /* ---- status footer ---- */
   .foot { flex: none; border-top: 1px solid var(--grid); background: var(--panel); padding: 8px 24px; font-size: 11.5px; color: var(--muted); }
@@ -138,10 +184,11 @@
 <div class="app">
   <header class="hdr" id="hdr"></header>
   <nav class="tools" id="tools"></nav>
+  <section class="radarwrap"><div class="radar" id="radar"></div></section>
   <div class="notice" id="notice" role="status"></div>
   <main class="grid">
     <table>
-      <colgroup><col class="c0"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"></colgroup>
+      <colgroup><col class="c0"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"><col class="c7"></colgroup>
       <thead><tr id="head"></tr></thead>
       <tbody id="rows"></tbody>
     </table>
@@ -154,66 +201,109 @@
 
 <script>
 /* ============================================================== config / i18n */
-const MIN_USD = 10000;            // minimum whale swap size fetched / shown
+const MIN_USD = 100000;           // data floor: the $100K+ backup view needs trades from $100K
+const SMART_MIN = 1000000;        // smart-money floor ($1M) used by the default view and by the AI radar
+const MAX_USD = 50000000;         // ceiling: nothing above $50M is shown
+const SIZES = { all: [SMART_MIN, MAX_USD], '1_5': [1e6, 5e6], '5_15': [5e6, 15e6], '15_50': [15e6, MAX_USD], '100k': [MIN_USD, MAX_USD] };   // [lo, hi]; hi exclusive for '1_5' and '5_15'
+const inRange = (usd, k) => usd >= SIZES[k][0] && (k === '1_5' || k === '5_15' ? usd < SIZES[k][1] : usd <= SIZES[k][1]);
+const CACHE_KEY = 'wt_cache', CACHE_MS = 96 * 3600 * 1000;   // persisted trades: kept 4 days
+/* Known fund / market-maker wallets (labels come from public explorer / analytics tagging, not guarantees).
+   Add more as  'address': 'Name'  (EVM addresses lower-case, Solana addresses exact). */
+const SMART_WALLETS = {
+  '0xf584f8728b874a6a5c7a8d4d387c9aae9172d621': 'Jump Trading',
+  '0xce84449a8ebec019ac110a4b6662e55d0fd9f228': 'Wintermute',
+  'K1c4Q9cH3cSfu64wCwLCuaaxmN54E2g2jPi3rQMj8re': 'Cumberland DRW',
+  // 'ADDRESS': 'Abraxas Capital',
+};
+const smartName = (w) => (w && (SMART_WALLETS[w] || SMART_WALLETS[w.toLowerCase()])) || '';
 const MAX_ROWS = 50;              // top-50 unique transactions
 const REFRESH_MS = 12000;         // silent auto-refresh
-const POOLS_PER_CHAIN = 6;
+const POOLS_PER_CHAIN = 30;        // top-30 pools by liquidity per network
 const TRADES_PER_CYCLE = 5;       // 5 calls / 12s + discovery stays under GeckoTerminal's public ~30/min limit
 const GT = 'https://api.geckoterminal.com/api/v2';
 
 const CHAINS = {
-  solana:   { gt: 'solana', tag: 'SOL',  explorer: 'https://solscan.io/tx/',   hash: /^[1-9A-HJ-NP-Za-km-z]{60,100}$/ },
-  ethereum: { gt: 'eth',    tag: 'ETH',  explorer: 'https://etherscan.io/tx/', hash: /^0x[0-9a-fA-F]{64}$/ },
-  base:     { gt: 'base',   tag: 'BASE', explorer: 'https://basescan.org/tx/', hash: /^0x[0-9a-fA-F]{64}$/ },
+  solana:   { gt: 'solana', tag: 'SOL',  explorer: 'https://solscan.io/tx/',   addr: 'https://solscan.io/account/', hash: /^[1-9A-HJ-NP-Za-km-z]{60,100}$/ },
+  ethereum: { gt: 'eth',    tag: 'ETH',  explorer: 'https://etherscan.io/tx/', addr: 'https://etherscan.io/address/', hash: /^0x[0-9a-fA-F]{64}$/ },
+  base:     { gt: 'base',   tag: 'BASE', explorer: 'https://basescan.org/tx/', addr: 'https://basescan.org/address/', hash: /^0x[0-9a-fA-F]{64}$/ },
 };
+/* Centralised exchange feed (OKX public REST, no key). Kept apart from CHAINS: it has no pools / explorer. */
+const OKX = 'https://www.okx.com/api/v5/market/trades';
+const OKX_COINS = ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'SUI', 'TON', 'PEPE'];   // quoted in USDT
+const OKX_LIMIT = 500;            // max rows per request
+const OKX_GAP_MS = 50;            // fills of one taker order land within a few ms: merge them into one trade
+const tagOf = (chain) => (CHAINS[chain] ? CHAINS[chain].tag : 'OKX');
+const isCex = (chain) => chain === 'okx';
 
 const I18N = {
   uz: {
     badge: ['CRYPTO', 'KITLAR', 'KUZATUVI'],
+    radar: { title: 'RAMANOV AI RADAR', sub: 'Smart Money Kitlar, Hedge Fondlar va Birja Hamyonlari Tahlili ($1M – $50M)', live: 'AI RADAR • LIVE TAHLIL',
+      inTitle: '3–4 KUNDA PUL KIRAYOTGAN KOINLAR / SOTIB OLISH', outTitle: '3–4 KUNDA PUL CHIQAYOTGAN KOINLAR / SOTISH',
+      buys: '{n} ta kit xaridi', sells: '{n} ta kit sotuvi', span: 'Kuzatuv', h: 'soat', d: 'kun', filter: 'Filtr',
+      empty: 'Hozircha ma‘lumot yig‘ilmoqda…',
+      winLong: 'Oxirgi 3–4 kun ichida', winShort: 'Kuzatilgan {span} ichida',
+      sumHead: 'AI Xulosa ({date}): {win}', sumIn: 'kitlar eng katta kapitalni {coin} ga kiritmoqda ({amt}).', sumOut: 'Eng ko‘p {coin} dan chiqarilmoqda ({amt}).' },
+    sources: ['Barcha manbalar', 'Shaxsiy hamyonlar', 'Birja (OKX)'], wallet: 'Shaxsiy hamyon', cex: 'OKX Birja', okxWhale: 'OKX Kit Hamyoni', newTag: 'YANGI', fallback: 'Hozircha $1M+ bitim topilmadi — zaxira sifatida $100K+ bitimlar ko‘rsatilmoqda; $1M+ bitim kelishi bilan avtomatik almashadi.',
     actions: ['Hammasi', 'Sotib oldi', 'Sotdi'], netAll: 'Barchasi', refresh: 'Yangilash',
     sort: { usd: 'Eng katta summa', time: 'Eng yangi' },
-    cols: ['#', 'HOLAT', 'KOIN', 'SUMMA (USD)', 'KOIN MIQDORI', 'ANIQ DATA', 'FAKT-CHEK'],
+    cols: ['#', 'HOLAT', 'KOIN', 'HAMYON / MANBA', 'SUMMA (USD)', 'KOIN MIQDORI', 'ANIQ DATA', 'FAKT-CHEK'],
     buy: 'SOTIB OLDI', sell: 'SOTDI', verify: 'Tekshirish ↗',
-    loading: 'Haqiqiy savdolar yuklanmoqda…', empty: 'Tanlangan filtrlarga mos savdo topilmadi.',
-    updated: 'Yangilandi', top: 'Top', of: 'jami', unique: 'noyob tranzaksiya', src: 'Manba',
-    degraded: 'GeckoTerminal sekin yoki cheklangan. Saqlangan savdolar ko‘rsatilmoqda, avtomatik qayta uriniladi.',
-    none: 'GeckoTerminal javob bermayapti. Avtomatik qayta uriniladi.',
-    note: 'Faqat haqiqiy $10,000+ savdolar (GeckoTerminal ochiq API, kalit va server kerak emas). Reyting: tanlangan tartib bo‘yicha top 50, tx_hash bo‘yicha noyob. Holat tanga (base token) bo‘yicha: SOTIB OLDI = tanga sotib olindi. Sana — qurilmangiz vaqt zonasida.',
+    loading: 'Haqiqiy Smart Money bitimlari yuklanmoqda…', empty: 'Hozircha shu filtrga mos $1M+ bitim topilmadi — kuzatuv davom etadi, yangi bitimlar avtomatik qo‘shiladi.',
+    updated: 'Yangilandi', top: 'Top', of: 'jami', unique: 'noyob tranzaksiya', src: 'Manba', cachedN: 'xotiradan',
+    degraded: 'Ba‘zi manbalar (GeckoTerminal / OKX) sekin yoki cheklangan. Saqlangan savdolar ko‘rsatilmoqda, avtomatik qayta uriniladi.',
+    none: 'Ma‘lumot yangilanmoqda… avtomatik qayta uriniladi.',
+    note: 'Faqat haqiqiy $1,000,000–$50,000,000 Smart Money bitimlari (oxirgi 4 kun brauzer xotirasida saqlanadi; $100K+ tugmasi zaxira ko‘rinish): shaxsiy hamyonlar (DEX, GeckoTerminal) va OKX birjasi ochiq bitimlari (kalit va server kerak emas; birja bitimida hamyon manzili bo‘lmaydi, ketma-ket bajarilgan ulushlar bitta bitimga birlashtiriladi). Reyting: tanlangan tartib bo‘yicha top 50, tx_hash bo‘yicha noyob. Holat tanga (base token) bo‘yicha: SOTIB OLDI = tanga sotib olindi. Sana — qurilmangiz vaqt zonasida.',
   },
   ru: {
     badge: ['CRYPTO', 'КИТЫ', 'МОНИТОРИНГ'],
+    radar: { title: 'RAMANOV AI RADAR', sub: 'Анализ Smart Money китов, хедж-фондов и биржевых кошельков ($1M – $50M)', live: 'AI RADAR • LIVE АНАЛИЗ',
+      inTitle: 'ЗА 3–4 ДНЯ ДЕНЬГИ ЗАХОДЯТ / ПОКУПКА', outTitle: 'ЗА 3–4 ДНЯ ДЕНЬГИ УХОДЯТ / ПРОДАЖА',
+      buys: '{n} покупок китов', sells: '{n} продаж китов', span: 'Охват', h: 'ч', d: 'дн', filter: 'Фильтр',
+      empty: 'Данные пока собираются…',
+      winLong: 'За последние 3–4 дня', winShort: 'За наблюдаемые {span}',
+      sumHead: 'AI-вывод ({date}): {win}', sumIn: 'киты вкладывают больше всего капитала в {coin} ({amt}).', sumOut: 'Больше всего выходят из {coin} ({amt}).' },
+    sources: ['Все источники', 'Личные кошельки', 'Биржа (OKX)'], wallet: 'Личный кошелёк', cex: 'Биржа OKX', okxWhale: 'Кошелёк кита OKX', newTag: 'НОВОЕ', fallback: 'Сделок от $1M пока нет — показаны сделки от $100K как запасной вариант; при появлении $1M+ список обновится автоматически.',
     actions: ['Все', 'Купил', 'Продал'], netAll: 'Все', refresh: 'Обновить',
     sort: { usd: 'Самые крупные', time: 'Самые новые' },
-    cols: ['#', 'СТАТУС', 'МОНЕТА', 'СУММА (USD)', 'КОЛ-ВО МОНЕТ', 'ТОЧНАЯ ДАТА', 'ФАКТЧЕК'],
+    cols: ['#', 'СТАТУС', 'МОНЕТА', 'КОШЕЛЁК / ИСТОЧНИК', 'СУММА (USD)', 'КОЛ-ВО МОНЕТ', 'ТОЧНАЯ ДАТА', 'ФАКТЧЕК'],
     buy: 'КУПИЛ', sell: 'ПРОДАЛ', verify: 'Проверить ↗',
-    loading: 'Загрузка реальных сделок…', empty: 'Нет сделок, подходящих под выбранные фильтры.',
-    updated: 'Обновлено', top: 'Топ', of: 'всего', unique: 'уникальных транзакций', src: 'Источник',
-    degraded: 'GeckoTerminal медленный или ограничен. Показаны сохранённые сделки, повтор выполняется автоматически.',
-    none: 'GeckoTerminal не отвечает. Повтор выполняется автоматически.',
-    note: 'Только реальные сделки от $10,000 (открытый API GeckoTerminal, без ключей и сервера). Рейтинг: топ-50 в выбранном порядке, уникальные по tx_hash. Статус относится к монете (base token): КУПИЛ = монета куплена. Дата — в часовом поясе вашего устройства.',
+    loading: 'Загрузка реальных сделок Smart Money…', empty: 'Пока нет сделок от $1M под выбранный фильтр — наблюдение продолжается, новые сделки добавятся автоматически.',
+    updated: 'Обновлено', top: 'Топ', of: 'всего', unique: 'уникальных транзакций', src: 'Источник', cachedN: 'из памяти',
+    degraded: 'Некоторые источники (GeckoTerminal / OKX) медленные или ограничены. Показаны сохранённые сделки, повтор выполняется автоматически.',
+    none: 'Данные обновляются… повтор выполняется автоматически.',
+    note: 'Только реальные сделки Smart Money от $1,000,000 до $50,000,000 (последние 4 дня хранятся в памяти браузера; кнопка $100K+ — запасной вид): личные кошельки (DEX, GeckoTerminal) и открытые сделки биржи OKX (без ключей и сервера; у биржевой сделки нет адреса кошелька, подряд исполненные части объединяются в одну сделку). Рейтинг: топ-50 в выбранном порядке, уникальные по tx_hash. Статус относится к монете (base token): КУПИЛ = монета куплена. Дата — в часовом поясе вашего устройства.',
   },
   en: {
     badge: ['CRYPTO', 'WHALE', 'TRACKER'],
+    radar: { title: 'RAMANOV AI RADAR', sub: 'Smart Money Whales, Hedge Funds & Exchange Wallets Analysis ($1M – $50M)', live: 'AI RADAR • LIVE ANALYSIS',
+      inTitle: '3–4 DAY INFLOW — COINS BEING BOUGHT', outTitle: '3–4 DAY OUTFLOW — COINS BEING SOLD',
+      buys: '{n} whale buys', sells: '{n} whale sells', span: 'Coverage', h: 'h', d: 'd', filter: 'Filter',
+      empty: 'Still collecting data…',
+      winLong: 'Over the last 3–4 days', winShort: 'Over the observed {span}',
+      sumHead: 'AI summary ({date}): {win}', sumIn: 'whales are putting the most capital into {coin} ({amt}).', sumOut: 'The biggest outflow is from {coin} ({amt}).' },
+    sources: ['All sources', 'Personal wallets', 'Exchange (OKX)'], wallet: 'Personal wallet', cex: 'OKX Exchange', okxWhale: 'OKX Whale Wallet', newTag: 'NEW', fallback: 'No $1M+ trades yet — showing $100K+ trades as a backup; the list switches automatically when a $1M+ trade arrives.',
     actions: ['All', 'Bought', 'Sold'], netAll: 'All', refresh: 'Refresh',
     sort: { usd: 'Largest', time: 'Newest' },
-    cols: ['#', 'STATUS', 'COIN', 'AMOUNT (USD)', 'COIN AMOUNT', 'EXACT DATE', 'FACT-CHECK'],
+    cols: ['#', 'STATUS', 'COIN', 'WALLET / SOURCE', 'AMOUNT (USD)', 'COIN AMOUNT', 'EXACT DATE', 'FACT-CHECK'],
     buy: 'BOUGHT', sell: 'SOLD', verify: 'Verify ↗',
-    loading: 'Loading real on-chain trades…', empty: 'No trades match the selected filters.',
-    updated: 'Updated', top: 'Top', of: 'of', unique: 'unique transactions', src: 'Source',
-    degraded: 'GeckoTerminal is slow or rate-limited. Showing stored trades and retrying automatically.',
-    none: 'GeckoTerminal is not responding. Retrying automatically.',
-    note: 'Real trades of $10,000+ only (GeckoTerminal public API, no keys, no backend). Ranking: top 50 in the selected order, unique by tx_hash. Status refers to the coin (base token): BOUGHT = the coin was bought. Dates use your device time zone.',
+    loading: 'Loading real smart-money trades…', empty: 'No $1M+ trades match this filter yet — still watching, new trades are added automatically.',
+    updated: 'Updated', top: 'Top', of: 'of', unique: 'unique transactions', src: 'Source', cachedN: 'from cache',
+    degraded: 'Some sources (GeckoTerminal / OKX) are slow or rate-limited. Showing stored trades and retrying automatically.',
+    none: 'Refreshing data… retrying automatically.',
+    note: 'Real smart-money trades of $1,000,000–$50,000,000 only (the last 4 days are kept in browser storage; the $100K+ button is a backup view): personal wallets (DEX, GeckoTerminal) and OKX exchange public trades (no keys, no backend; exchange trades carry no wallet address, back-to-back fills are merged into one trade). Ranking: top 50 in the selected order, unique by tx_hash. Status refers to the coin (base token): BOUGHT = the coin was bought. Dates use your device time zone.',
   },
 };
 
 /* ============================================================== state */
-const state = { lang: 'uz', action: 'all', net: 'all', min: 10000, sort: 'usd' };
+const state = { lang: 'uz', action: 'all', net: 'all', sort: 'usd', src: 'all', size: 'all', coin: '' };
 try {
   const l = localStorage.getItem('wt_lang'); if (l && I18N[l]) state.lang = l;
 } catch (e) { /* storage unavailable */ }
 document.documentElement.setAttribute('data-theme', 'gold');   // single fixed dark + gold design
 
 const trades = new Map();   // "chain:tx_hash" -> trade (unique per transaction)
+loadCache();
 let pools = [];             // monitored pools, interleaved across chains
 let rr = 0;                 // round-robin pointer
 let lastDiscovery = 0;
@@ -276,7 +366,7 @@ async function gtCall(path) {
   try {
     return await fetchJSON(GT + path, 9000);
   } catch (e) {
-    if (/429|timeout/.test(e.message)) gtCooldownUntil = Date.now() + 60000;
+    if (/429|timeout|Failed to fetch|NetworkError/i.test(e.message)) gtCooldownUntil = Date.now() + 45000;   // a rate-limited reply often shows up as a CORS-style failure
     throw e;
   }
 }
@@ -293,25 +383,39 @@ function poolFromGT(p, chain) {
   };
 }
 
-async function discoverPools() {
-  const results = await Promise.allSettled(Object.keys(CHAINS).map(async (chain) => {
-    const j = await gtCall(`/networks/${CHAINS[chain].gt}/trending_pools?duration=1h&page=1`);
-    return { chain, list: (j.data || []).map((p) => poolFromGT(p, chain)) };
-  }));
-  const picked = {};
-  for (const chain of Object.keys(CHAINS)) picked[chain] = [];
-  results.forEach((r, i) => {
-    const chain = Object.keys(CHAINS)[i];
-    if (r.status !== 'fulfilled') { errors.push(`trending ${chain}: ${r.reason && r.reason.message}`); return; }
-    const seen = new Set();
-    picked[chain] = r.value.list
-      .filter((p) => p.addr && p.liq >= 100000 && !seen.has(lc(p.addr)) && seen.add(lc(p.addr)))
-      .sort((a, b) => b.vol1h - a.vol1h)
-      .slice(0, POOLS_PER_CHAIN);
-  });
-  const inter = [];
-  for (let i = 0; i < POOLS_PER_CHAIN; i++) for (const chain of Object.keys(CHAINS)) if (picked[chain][i]) inter.push(picked[chain][i]);
-  if (inter.length) { pools = inter; lastDiscovery = Date.now(); }
+/* Top-30 pools per network by liquidity. 'quick' = trending list only (fast start); 'full' adds the busiest-pools pages.
+   Every request is serialised by gtCall and wrapped in try/catch, so one failure never blocks the rest. */
+let discovering = false, fullDone = 0;
+async function discoverPools(mode) {
+  if (discovering) return;
+  discovering = true;
+  try {
+    const chains = Object.keys(CHAINS);
+    const paths = (chain) => {
+      const net = CHAINS[chain].gt, list = [`/networks/${net}/trending_pools?duration=1h&page=1`];
+      if (mode === 'full') list.push(`/networks/${net}/pools?page=1`, `/networks/${net}/pools?page=2`);
+      return list;
+    };
+    const found = {}; chains.forEach((c) => { found[c] = []; });
+    for (const chain of chains) {
+      for (const path of paths(chain)) {
+        try {
+          const j = await gtCall(path);
+          for (const p of (j.data || [])) found[chain].push(poolFromGT(p, chain));
+        } catch (e) { errors.push(`pools ${chain}: ${e && e.message}`); }
+      }
+    }
+    const picked = {};
+    for (const chain of chains) {
+      const seen = new Set(pools.filter((p) => p.chain === chain).map((p) => lc(p.addr)));
+      const merged = [...pools.filter((p) => p.chain === chain), ...found[chain].filter((p) => p.addr && !seen.has(lc(p.addr)))];
+      const uniq = new Map(); merged.forEach((p) => { if (p.addr) uniq.set(lc(p.addr), p.liq >= (uniq.get(lc(p.addr)) || { liq: 0 }).liq ? p : uniq.get(lc(p.addr))); });
+      picked[chain] = [...uniq.values()].filter((p) => p.liq >= 300000).sort((a, b) => b.liq - a.liq).slice(0, POOLS_PER_CHAIN);
+    }
+    const inter = [];
+    for (let i = 0; i < POOLS_PER_CHAIN; i++) for (const chain of chains) if (picked[chain][i]) inter.push(picked[chain][i]);
+    if (inter.length) { pools = inter; lastDiscovery = Date.now(); if (mode === 'full') fullDone = Date.now(); }
+  } finally { discovering = false; }
 }
 
 /* ============================================================== trades */
@@ -320,31 +424,99 @@ function parseTrades(json, pool) {
   for (const row of (json && json.data) || []) {
     const a = (row && row.attributes) || {};
     const usd = num(a.volume_in_usd), tx = String(a.tx_hash || ''), ts = Date.parse(a.block_timestamp);
-    if (!tx || !(usd >= MIN_USD) || !Number.isFinite(ts)) continue;
+    if (!tx || !(usd >= MIN_USD && usd <= MAX_USD) || !Number.isFinite(ts)) continue;
     const kind = a.kind === 'sell' ? 'sell' : 'buy';
     // amount of the pool's base coin: whichever side of the swap is the base token
     const fromIsBase = pool.baseAddr ? lc(a.from_token_address) === lc(pool.baseAddr) : kind === 'sell';
     const amount = num(fromIsBase ? a.from_token_amount : a.to_token_amount);
-    out.push({ key: pool.chain + ':' + tx, chain: pool.chain, symbol: pool.symbol, kind, usd, amount, ts, tx });
+    out.push({ key: pool.chain + ':' + tx, chain: pool.chain, symbol: pool.symbol, kind, usd, amount, ts, tx, wallet: String(a.tx_from_address || '') });
   }
   return out;
 }
 
 /** One row per tx_hash (keeps the largest swap if a tx touches several pools). Retains recent 24h only. */
+/* ============================================================== AI whale radar: rolling history */
+/* The public API only returns ~24h of trades, so every real $10K+ swap this page sees is also kept
+   (deduped by tx) in localStorage for 4 days. The radar therefore covers only what was actually observed. */
+const HIST_KEY = 'wt_hist', HIST_MS = 4 * 24 * 3600 * 1000, HIST_MAX = 4000;
+const hist = new Map();   // key -> [key, ts, chain, symbol, isBuy(1/0), usd]
+try {
+  const cut = Date.now() - HIST_MS;
+  for (const r of JSON.parse(localStorage.getItem(HIST_KEY) || '[]')) if (Array.isArray(r) && r.length === 6 && r[1] >= cut && r[5] >= SMART_MIN) hist.set(r[0], r);
+} catch (e) { /* storage unavailable */ }
+function saveHist() {
+  try {
+    const cut = Date.now() - HIST_MS;
+    for (const [k, v] of hist) if (v[1] < cut) hist.delete(k);
+    if (hist.size > HIST_MAX) { const keep = [...hist.values()].sort((a, b) => b[1] - a[1]).slice(0, HIST_MAX); hist.clear(); for (const r of keep) hist.set(r[0], r); }
+    localStorage.setItem(HIST_KEY, JSON.stringify([...hist.values()]));
+  } catch (e) { /* quota or storage unavailable */ }
+}
+function radarData() {
+  const now = Date.now(), cut = now - HIST_MS, by = new Map();
+  let oldest = now;
+  for (const r of hist.values()) {
+    if (r[1] < cut || r[5] < SMART_MIN || r[5] > MAX_USD) continue;
+    oldest = Math.min(oldest, r[1]);
+    const k = String(r[3]).toUpperCase();
+    let c = by.get(k); if (!c) { c = { symbol: k, buy: 0, sell: 0, nBuy: 0, nSell: 0 }; by.set(k, c); }
+    if (r[4]) { c.buy += r[5]; c.nBuy++; } else { c.sell += r[5]; c.nSell++; }
+  }
+  const all = [...by.values()];
+  const tb = all.reduce((a, c) => a + c.buy, 0), ts = all.reduce((a, c) => a + c.sell, 0);
+  all.forEach((c) => { c.pBuy = tb ? c.buy / tb * 100 : 0; c.pSell = ts ? c.sell / ts * 100 : 0; });
+  return {
+    buys: all.filter((c) => c.buy > 0).sort((a, b) => b.buy - a.buy).slice(0, 5),
+    sells: all.filter((c) => c.sell > 0).sort((a, b) => b.sell - a.sell).slice(0, 5),
+    hours: hist.size ? (now - oldest) / 3600000 : 0,
+  };
+}
+
+/* ---- Smart cache: every real $1M-$50M trade seen is kept 48h in localStorage and shown instantly on reload ---- */
+function loadCache() {
+  try {
+    const cut = Date.now() - CACHE_MS;
+    for (const r of JSON.parse(localStorage.getItem(CACHE_KEY) || '[]')) {
+      if (r && r.key && r.ts >= cut && r.usd >= MIN_USD && r.usd <= MAX_USD) trades.set(r.key, { ...r, cached: true });
+    }
+  } catch (e) { /* storage unavailable */ }
+}
+let cacheTimer = 0;
+function saveCache() {
+  clearTimeout(cacheTimer);
+  cacheTimer = setTimeout(() => {
+    try {
+      const cut = Date.now() - CACHE_MS;
+      const rows = [...trades.values()].filter((r) => r.ts >= cut).sort((a, b) => b.ts - a.ts)
+        .slice(0, 2000)
+        .map(({ key, chain, symbol, kind, usd, amount, ts, tx, wallet, pair }) => ({ key, chain, symbol, kind, usd, amount, ts, tx, wallet, pair }));
+      localStorage.setItem(CACHE_KEY, JSON.stringify(rows));
+    } catch (e) { /* quota or storage unavailable */ }
+  }, 1500);
+}
+
 function addTrades(list) {
   let changed = false;
+  const now = Date.now();
   for (const tr of list) {
     const cur = trades.get(tr.key);
-    if (!cur || tr.usd > cur.usd) { trades.set(tr.key, tr); changed = true; }
+    if (!cur) { trades.set(tr.key, { ...tr, fresh: now - tr.ts < 600000 ? now : 0 }); changed = true; }   // YANGI tag only for trades that really just happened          // new: goes straight into the list
+    else {
+      if (cur.cached) { cur.cached = false; changed = true; }                         // confirmed live by the API again
+      if (tr.usd > cur.usd) { trades.set(tr.key, { ...cur, ...tr, cached: false }); changed = true; }
+    }
+    const h = hist.get(tr.key);
+    if (tr.usd >= SMART_MIN && (!h || tr.usd > h[5])) { hist.set(tr.key, [tr.key, tr.ts, tr.chain, tr.symbol, tr.kind === 'buy' ? 1 : 0, tr.usd]); changed = true; }
   }
   if (!changed) return;
-  const cutoff = Date.now() - 24 * 3600 * 1000;
+  const cutoff = now - CACHE_MS;
   for (const [k, v] of trades) if (v.ts < cutoff) trades.delete(k);
-  if (trades.size > 1500) {                                   // keep memory bounded: drop smallest
-    const keep = [...trades.values()].sort((a, b) => b.usd - a.usd).slice(0, 1000);
+  if (trades.size > 3000) {                                   // keep memory bounded: drop oldest
+    const keep = [...trades.values()].sort((a, b) => b.ts - a.ts).slice(0, 2500);
     trades.clear(); for (const x of keep) trades.set(x.key, x);
   }
   version++;
+  saveCache();
 }
 
 async function fetchPoolTrades(pool) {
@@ -354,20 +526,56 @@ async function fetchPoolTrades(pool) {
   render();                                                    // progressive: show each pool as soon as it lands
 }
 
+/* ---- OKX exchange feed ---- */
+function parseOkx(json, coin) {
+  const rows = ((json && json.data) || []).map((r) => ({ id: String(r.tradeId), px: num(r.px), sz: num(r.sz), side: r.side === 'sell' ? 'sell' : 'buy', ts: num(r.ts) }))
+    .filter((r) => r.px > 0 && r.sz > 0 && r.ts > 0).sort((a, b) => a.ts - b.ts || (a.id < b.id ? -1 : 1));
+  const full = rows.length >= OKX_LIMIT;
+  const groups = [];
+  for (const r of rows) {
+    const g = groups[groups.length - 1];
+    if (g && g.side === r.side && r.ts - g.last <= OKX_GAP_MS) { g.usd += r.px * r.sz; g.amount += r.sz; g.last = r.ts; }
+    else groups.push({ side: r.side, id: r.id, ts: r.ts, last: r.ts, usd: r.px * r.sz, amount: r.sz });
+  }
+  if (full && groups.length) groups.shift();          // oldest group may be cut off by the row limit: skip it
+  const out = [];
+  for (const g of groups) {
+    if (g.usd < MIN_USD || g.usd > MAX_USD) continue;
+    out.push({ key: 'okx:' + coin + ':' + g.side + ':' + g.id, chain: 'okx', symbol: coin, kind: g.side, usd: g.usd, amount: g.amount, ts: g.ts, tx: g.id, wallet: '', pair: coin + '-USDT' });
+  }
+  return out;
+}
+let okxCooldownUntil = 0;
+async function fetchOkx(coin) {            // optional source: never throws, never raises the error banner
+  if (Date.now() < okxCooldownUntil) return;
+  try {
+    const j = await fetchJSON(`${OKX}?instId=${coin}-USDT&limit=${OKX_LIMIT}`, 9000);
+    if (j && j.code && j.code !== '0') throw new Error('OKX ' + j.code);
+    lastUpdate = new Date();
+    addTrades(parseOkx(j, coin));
+    render();
+  } catch (e) {
+    okxCooldownUntil = Date.now() + 300000;           // blocked by CORS / rate limit: pause OKX 5 min, GeckoTerminal keeps running
+  }
+}
+
 /* ============================================================== refresh cycle */
 async function cycle() {
   if (inflight) return;
   inflight = true; errors = [];
   const btn = $('refresh'); if (btn) btn.disabled = true;
   try {
-    if (!pools.length || Date.now() - lastDiscovery > 180000) await discoverPools();
+    if (!pools.length) await discoverPools('quick');
+    if (Date.now() - fullDone > 600000 && !discovering) discoverPools('full').then(() => render(true), () => {});   // background: busiest pools, every 10 min
     const n = lastUpdate ? TRADES_PER_CYCLE : 6;
     const picks = [];
     for (let i = 0; i < n && pools.length; i++) picks.push(pools[rr++ % pools.length]);
-    const res = await Promise.allSettled(picks.map(fetchPoolTrades));   // slow/failed pools never block the rest
+    const res = await Promise.allSettled(picks.map(fetchPoolTrades));   // GeckoTerminal = main source
     res.forEach((r, i) => { if (r.status === 'rejected') errors.push(`trades ${picks[i].chain}: ${r.reason && r.reason.message}`); });
+    try { await Promise.allSettled(OKX_COINS.map(fetchOkx)); } catch (e) { /* OKX is optional */ }
   } finally {
     inflight = false;
+    saveHist();
     const b = $('refresh'); if (b) b.disabled = false;
     render(true);
   }
@@ -375,26 +583,53 @@ async function cycle() {
 
 /* ============================================================== view */
 function visibleRows() {
-  const rows = [...trades.values()].filter((r) =>
+  const all = [...trades.values()].filter((r) =>
     (state.action === 'all' || r.kind === state.action) &&
-    (state.net === 'all' || r.chain === state.net) && r.usd >= state.min);
+    (state.net === 'all' || r.chain === state.net) &&
+    (state.src === 'all' || (state.src === 'cex') === isCex(r.chain)) &&
+    (!state.coin || r.symbol.toUpperCase() === state.coin));
+  const pick = (k) => all.filter((r) => inRange(r.usd, k));
+  let rows = pick(state.size), fallback = false;
+  if (!rows.length && state.size === 'all') { rows = pick('100k'); fallback = rows.length > 0; }   // never an empty table: fall back to $100K+
   rows.sort(state.sort === 'usd' ? (a, b) => b.usd - a.usd || b.ts - a.ts : (a, b) => b.ts - a.ts || b.usd - a.usd);
-  return { rows: rows.slice(0, MAX_ROWS), total: rows.length };
+  return { rows: rows.slice(0, MAX_ROWS), total: rows.length, fallback };
 }
 
 function verifyCell(r) {
+  if (isCex(r.chain)) {   // exchange trades have no tx hash: open the market on OKX
+    return el('a', { class: 'gbtn', href: 'https://www.okx.com/trade-spot/' + encodeURIComponent(r.pair.toLowerCase()), target: '_blank', rel: 'noopener noreferrer', text: t().verify });
+  }
   const c = CHAINS[r.chain];
   if (!c.hash.test(r.tx)) return el('span', { class: 'muted', text: '—' });
   return el('a', { class: 'gbtn', href: c.explorer + encodeURIComponent(r.tx), target: '_blank', rel: 'noopener noreferrer', text: t().verify });
 }
 
+function shortAddr(a, chain) {
+  if (!a) return '—';
+  return chain === 'solana' ? a.slice(0, 4) + '…' + a.slice(-4) : a.slice(0, 5) + '…' + a.slice(-3);
+}
+function walletCell(r) {
+  if (isCex(r.chain)) {
+    return el('td', null, el('span', { class: 'src smart', text: 'SMART MONEY' }), el('span', { class: 'src cex', text: t().okxWhale }));
+  }
+  const c = CHAINS[r.chain], name = smartName(r.wallet);
+  const addr = r.wallet
+    ? el('a', { class: 'addr mono', href: c.addr + encodeURIComponent(r.wallet), target: '_blank', rel: 'noopener noreferrer', title: r.wallet, text: shortAddr(r.wallet, r.chain) })
+    : el('span', { class: 'addr mono muted', text: '—' });
+  if (name) return el('td', null, el('span', { class: 'src smart', text: 'SMART MONEY' }), el('b', { class: 'fund', text: name }), el('span', { class: 'fundaddr' }, addr));
+  return el('td', null, addr, el('span', { class: 'src dex', text: t().wallet }));
+}
+
 function rowEl(r, i, max) {
   const buy = r.kind === 'buy';
   const pct = max > 0 ? Math.max(1, Math.min(100, (r.usd / max) * 100)) : 0;
-  return el('tr', null,
+  const smart = isCex(r.chain) || !!smartName(r.wallet);
+  const isNew = r.fresh && Date.now() - r.fresh < 300000;
+  return el('tr', { class: smart ? 'smart' : '' },
     el('td', null, el('span', { class: 'rank' + (i < 3 ? ' top' : ''), text: '#' + (i + 1) })),
     el('td', null, el('span', { class: 'badge ' + (buy ? 'buy' : 'sell'), text: buy ? t().buy : t().sell })),
-    el('td', null, el('span', { class: 'sym', text: r.symbol }), el('span', { class: 'tag', text: CHAINS[r.chain].tag })),
+    el('td', null, el('span', { class: 'sym', text: r.symbol }), el('span', { class: 'tag', text: tagOf(r.chain) }), isNew ? el('span', { class: 'newtag', text: t().newTag }) : null),
+    walletCell(r),
     el('td', { class: 'usd', title: '$' + r.usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
       el('span', { class: 'fill', style: 'width:' + pct.toFixed(2) + '%' }), el('span', { class: 'amt', text: fmtUsd(r.usd) })),
     el('td', { class: 'mono num' }, fmtCoins(r.amount) + ' ' + r.symbol),
@@ -427,28 +662,65 @@ function renderChrome() {
       el('div', { class: 'grp lang' }, ...['uz', 'ru', 'en'].map((l) => el('button', { class: 'pill', type: 'button', 'data-lang': l, 'aria-pressed': String(state.lang === l), text: l.toUpperCase() })))));
   $('tools').replaceChildren(
     el('div', { class: 'grp' }, pill('action', 'all', L.actions[0]), pill('action', 'buy', L.actions[1]), pill('action', 'sell', L.actions[2])),
+    el('div', { class: 'grp' }, pill('src', 'all', L.sources[0]), pill('src', 'dex', L.sources[1]), pill('src', 'cex', L.sources[2])),
     el('div', { class: 'sep' }),
     el('div', { class: 'grp' }, pill('net', 'all', L.netAll), pill('net', 'solana', 'Solana'), pill('net', 'ethereum', 'Ethereum'), pill('net', 'base', 'Base')),
     el('div', { class: 'sep' }),
-    el('div', { class: 'grp' }, pill('min', 10000, '$10K+'), pill('min', 25000, '$25K+'), pill('min', 50000, '$50K+'), pill('min', 100000, '$100K+')),
+    el('div', { class: 'grp' }, pill('size', 'all', '$1M – $50M (Smart Money)'), pill('size', '1_5', '$1M – $5M'), pill('size', '5_15', '$5M – $15M'), pill('size', '15_50', '$15M – $50M'), pill('size', '100k', '$100K+')),
     el('div', { class: 'spacer' }),
     el('button', { class: 'pill sort', id: 'sortToggle', type: 'button', title: state.sort === 'usd' ? L.sort.time : L.sort.usd, text: '⇅ ' + L.sort[state.sort] }),
     el('button', { class: 'gbtn', id: 'refresh', type: 'button', text: L.refresh }));
   $('refresh').disabled = inflight;
-  $('head').replaceChildren(...L.cols.map((c, i) => el('th', { class: i === 3 || i === 4 ? 'num' : '', text: c })));
+  $('head').replaceChildren(...L.cols.map((c, i) => el('th', { class: i === 4 || i === 5 ? 'num' : '', text: c })));
   $('note').textContent = L.note;
+}
+
+function fmtSpan(h) {
+  const L = t().radar;
+  return h < 48 ? Math.max(1, Math.round(h)) + ' ' + L.h : (h / 24).toFixed(1) + ' ' + L.d;
+}
+const fmtM = (n) => '$' + (n / 1e6).toFixed(n >= 1e7 ? 1 : 2) + 'M';
+function renderRadar() {
+  const L = t().radar, { buys, sells, hours } = radarData();
+  const d = new Date(), date = `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`;
+  const head = el('div', { class: 'rhead' },
+    el('span', { class: 'rlive' }, el('span', { class: 'rdot' }), el('span', { text: L.live })),
+    el('span', { class: 'rtitle' }, el('b', { text: L.title }), ' — ' + L.sub),
+    state.coin ? el('button', { class: 'rclear', type: 'button', 'data-coin': '', text: `${L.filter}: ${state.coin} ✕` }) : null,
+    el('span', { class: 'rspan', text: hours ? `${L.span}: ${fmtSpan(hours)}` : '' }));
+  const col = (kind, list) => {
+    const buy = kind === 'in';
+    const items = list.length
+      ? list.map((c, i) => el('button', { class: 'rcoin' + (state.coin === c.symbol ? ' on' : ''), type: 'button', 'data-coin': c.symbol, title: c.symbol },
+          el('span', { class: 'rk', text: '#' + (i + 1) }),
+          el('span', { class: 'nm', text: c.symbol }),
+          el('span', { class: 'cnt', text: (buy ? L.buys : L.sells).replace('{n}', buy ? c.nBuy : c.nSell) }),
+          el('span', { class: 'pct', text: (buy ? c.pBuy : c.pSell).toFixed(1) + '%' }),
+          el('span', { class: 'amt ' + (buy ? 'g' : 'r'), text: (buy ? '+' : '−') + fmtM(buy ? c.buy : c.sell) })))
+      : [el('div', { class: 'rempty', text: L.empty })];
+    return el('div', { class: 'rcol ' + kind }, el('div', { class: 'rcoltitle', text: (buy ? '🟢 ' : '🔴 ') + (buy ? L.inTitle : L.outTitle) }), el('div', { class: 'rlist' }, ...items));
+  };
+  const kids = [head, el('div', { class: 'rcols' }, col('in', buys), col('out', sells))];
+  if (buys.length || sells.length) {
+    const win = hours >= 72 ? L.winLong : L.winShort.replace('{span}', fmtSpan(hours));
+    let txt = L.sumHead.replace('{date}', date).replace('{win}', win);
+    if (buys.length) txt += ' ' + L.sumIn.replace('{coin}', buys[0].symbol).replace('{amt}', '+' + fmtM(buys[0].buy));
+    if (sells.length) txt += ' ' + L.sumOut.replace('{coin}', sells[0].symbol).replace('{amt}', '−' + fmtM(sells[0].sell));
+    kids.push(el('div', { class: 'rsum', text: txt }));
+  }
+  $('radar').replaceChildren(...kids);
 }
 
 let renderedVersion = -1, renderedKey = '';
 function render(force) {
-  const key = [state.lang, state.action, state.net, state.min, state.sort, errors.length, inflight].join('|');
+  const key = [state.lang, state.action, state.net, state.size, state.coin, state.sort, errors.length, inflight].join('|');
   if (!force && version === renderedVersion && key === renderedKey) return;
   const L = t();
-  const { rows, total } = visibleRows();
+  const { rows, total, fallback } = visibleRows();
   const tbody = $('rows');
   if (!rows.length) {
     const msg = trades.size ? L.empty : (lastUpdate || errors.length ? (errors.length ? L.none : L.empty) : L.loading);
-    tbody.replaceChildren(el('tr', null, el('td', { class: 'empty', colspan: '7', text: msg })));
+    tbody.replaceChildren(el('tr', null, el('td', { class: 'empty', colspan: '8', text: msg })));
   } else {
     const max = rows.reduce((m, r) => Math.max(m, r.usd), 0);
     tbody.replaceChildren(...rows.map((r, i) => rowEl(r, i, max)));
@@ -456,12 +728,15 @@ function render(force) {
 
   const slow = Date.now() < gtCooldownUntil || errors.length > 0;
   const notice = $('notice');
-  notice.textContent = slow && trades.size ? L.degraded : '';
-  notice.className = slow && trades.size ? 'notice show' : 'notice';
+  const msg2 = [fallback ? L.fallback : '', slow && trades.size ? L.degraded : ''].filter(Boolean).join(' ');
+  notice.textContent = msg2;
+  notice.className = msg2 ? 'notice show' : 'notice';
 
   $('statusL').textContent = lastUpdate
     ? `${L.updated} ${pad(lastUpdate.getHours())}:${pad(lastUpdate.getMinutes())}:${pad(lastUpdate.getSeconds())} · ${L.top} ${rows.length} ${L.of} ${total} ${L.unique}` : '';
-  $('statusR').textContent = lastUpdate ? `${L.src}: GeckoTerminal` : '';
+  const nCached = [...trades.values()].filter((x) => x.cached).length;
+  $('statusR').textContent = [lastUpdate ? `${L.src}: GeckoTerminal + OKX` : '', nCached ? `${L.cachedN}: ${nCached}` : ''].filter(Boolean).join(' · ');
+  renderRadar();
   renderedVersion = version; renderedKey = key;
 }
 
@@ -469,12 +744,13 @@ function render(force) {
 document.addEventListener('click', (e) => {
   const b = e.target.closest('button');
   if (!b) return;
+  if (b.dataset.coin !== undefined) { state.coin = (b.dataset.coin === '' || state.coin === b.dataset.coin) ? '' : b.dataset.coin; render(true); return; }
   if (b.id === 'refresh') { cycle(); return; }
   if (b.id === 'sortToggle') { state.sort = state.sort === 'usd' ? 'time' : 'usd'; renderChrome(); render(true); return; }
   if (b.dataset.lang) { setLang(b.dataset.lang); return; }
   if (b.dataset.g) {
     const g = b.dataset.g;
-    state[g] = g === 'min' ? Number(b.dataset.v) : b.dataset.v;
+    state[g] = b.dataset.v;
     renderChrome(); render(true);
   }
 });
