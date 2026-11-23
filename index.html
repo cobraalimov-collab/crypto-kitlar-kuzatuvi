@@ -194,6 +194,8 @@
   .istep svg { vertical-align:-4px; margin:0 2px; }
   .iclose { margin-top:10px; width:100%; background:#064E3B; color:#FFFFFF; border:1px solid #B8860B; border-radius:9999px; padding:8px; font:inherit; font-weight:700; cursor:pointer; box-shadow:0 3px 0 rgba(0,0,0,.45); transition:transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .12s; }
   .iclose:active { transform:translateY(2px) scale(.985); box-shadow:0 1px 0 rgba(0,0,0,.45); transition-duration:.08s; }
+  #pl td, #pl th { padding-left:7px; padding-right:7px; } #pl td.mono, #pl td .act { font-size:11.5px; } #pl .act { padding:3px 8px; letter-spacing:.2px; }
+  #pl .scroll { overflow-x:hidden; }
 </style>
 </head>
 <body>
@@ -559,7 +561,8 @@ function renderLeft() {
   const L = T(), now = Date.now(), cut = now - KEEP_MS;
   let floor = SMART_MIN, rows = inst.filter((r) => r.usd >= floor && !isStable(r.symbol)).slice(0, 60), fb = false;
   if (!rows.length) { floor = DATA_MIN; rows = inst.filter((r) => r.usd >= floor && !isStable(r.symbol)).slice(0, 60); fb = rows.length > 0; }
-  const a = aggLeft(floor);
+  const main = rows.length, a = aggLeft(floor);
+  if (rows.length < 12) { const have = new Set(rows); rows = rows.concat(inst.filter((r) => !have.has(r) && !isStable(r.symbol)).slice(0, 12 - rows.length)); }   // smaller REAL moves fill the remaining space, never invented rows
   const ai = a.n ? fill(L.aiLtxt, { span:fmtSpan(a.hours), k:a.n, n:INSTITUTIONS.length, inc:a.inc ? a.inc.symbol : L.none, ia:a.inc ? '(+' + fmtM(Math.max(0, a.inc.net)) + ')' : '', outc:a.out ? a.out.symbol : L.none, oa:a.out ? '(' + fmtM(Math.min(0, a.out.net)) + ')' : '' })
     : fill(L.aiLnone, { n:INSTITUTIONS.length });
   voiceText.l = ai;
@@ -570,10 +573,11 @@ function renderLeft() {
     el('td', { class:'mono r', text:fmtUsd(r.usd) }), el('td', { class:'mono dim', text:fmtDate(r.ts) }),
     el('td', null, el('a', { href:'https://etherscan.io/tx/' + encodeURIComponent(r.tx), target:'_blank', rel:'noopener noreferrer', text:L.tx }))));
   else if (now - START < 9000 && !lastInst) body = skeleton(6, 8);
-  else body = INSTITUTIONS.map((f) => el('tr', null,           // never an empty table: watched wallets with live explorer links
+  else body = [];
+  if (!rows.length || rows.length < 10) body = body.concat(INSTITUTIONS.filter((f) => !rows.some((r) => lc(r.fund) === lc(f.name))).map((f) => el('tr', null,           // never an empty table: watched wallets with live explorer links
     el('td', { class:'dim', text:'—' }), el('td', { class:'fund', text:f.name }), el('td', null, el('span', { class:'act watchb' }, el('span', { class:'pdot' }), L.watch)),
     el('td', { class:'mono r dim', text:'—' }), el('td', { class:'mono dim', text:lastInst ? fmtDate(lastInst) : '—' }),
-    el('td', null, el('a', { href:'https://etherscan.io/address/' + f.addr, target:'_blank', rel:'noopener noreferrer', text:'Etherscan ↗' }))));
+    el('td', null, el('a', { href:'https://etherscan.io/address/' + f.addr, target:'_blank', rel:'noopener noreferrer', text:'Etherscan ↗' })))));
   $('pl').replaceChildren(
     el('div', { class:'phead' }, el('h2', { text:L.l }), el('span', { class:'sub', text:L.lsub }), status(bsSlow, lastInst)),
     el('div', { class:'ai' }, aiHead(L.aiL, 'l'), ai, fb ? el('div', { class:'dim', style:'margin-top:6px;font-size:12px', text:L.fb }) : null),
